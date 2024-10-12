@@ -1,0 +1,33 @@
+#menu {
+  top: 0.1px;
+}
+
+.tabel_img {
+  min-width: 60px;
+  min-height: 60px;
+}
+
+a {
+  text-decoration: none;
+}
+
+img {
+  transition: transform 0.3s;
+}
+
+img:hover {
+  transform: scale(1.6);
+}
+
+#threeHead {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+#threeHead::first-letter {
+  font-size: 28px;
+}
+
+.header {
+  font-weight: 625;
+}
