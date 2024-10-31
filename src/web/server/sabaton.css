@@ -15,6 +15,35 @@ input {
     both;
   animation: focus-in-expand 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
+.myColumn {
+  width: 170px;
+  float: left;
+  padding-bottom: 100px;
+  margin-top: 1em;
+}
+.portlet {
+  margin: 0 1em 1em 0;
+  padding: 0.3em;
+}
+.portlet-header {
+  padding: 0.2em 0.3em;
+  margin-bottom: 0.5em;
+  position: relative;
+}
+.portlet-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-top: -8px;
+}
+.portlet-content {
+  padding: 0.4em;
+}
+.portlet-placeholder {
+  border: 1px dotted black;
+  margin: 0 1em 1em 0;
+  height: 50px;
+}
 
 @-webkit-keyframes focus-in-expand {
   0% {

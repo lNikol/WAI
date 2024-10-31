@@ -8,7 +8,38 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.structure.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.min.css"
+    />
+
+    <div id="copyDialog" title="Skopiowano tekst" style="display: none">
+      <p id="copiedText" style="white-space: pre-line">
+        Tekst, który został skopiowany, pojawi się tutaj.
+      </p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
     <script>
+      $(document).ready(function () {
+        $(".filter").click(function () {
+          let group = $(this).data("group");
+          $("img").hide();
+          $("." + group).show();
+        });
+      });
+
       document.addEventListener("copy", function (event) {
         // Zapobieganie domyślnej akcji kopiowania
         event.preventDefault();
@@ -18,11 +49,21 @@
 
         if (selectedText) {
           const textToCopy =
-            selectedText + "\nSkopiowano ze strony WAI-Lavrinov";
+            selectedText + "\n\n'Skopiowano ze strony WAI-Lavrinov'";
 
           // Użycie Clipboard API do ustawienia tekstu w schowku
           event.clipboardData.setData("text/plain", textToCopy);
 
+          // Wyświetlenie skopiowanego tekstu w dialogu
+          $("#copiedText").text(textToCopy);
+          $("#copyDialog").dialog({
+            modal: true,
+            buttons: {
+              Zamknij: function () {
+                $(this).dialog("close");
+              },
+            },
+          });
           console.log("Tekst został skopiowany z dopiskiem: " + textToCopy);
         }
       });
@@ -80,6 +121,12 @@
       </header>
 
       <div class="container m-3" id="body">
+        <button class="filter btn btn-primary" data-group="sabaton">
+          Sabaton
+        </button>
+        <button class="filter btn btn-primary" data-group="threedays">
+          Three Days Grace
+        </button>
         <p>Tutaj można znaleźć zdjęcia muzycznych zespołów</p>
 
         <div>
@@ -97,7 +144,7 @@
               <tr>
                 <td>
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
                     src="images/gallery/5.jpg"
                     alt="image 5"
                   />
@@ -105,14 +152,14 @@
 
                 <td colspan="2">
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
                     src="images/gallery/2.jpg"
                     alt="image 2"
                   />
                 </td>
                 <td>
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
                     src="images/gallery/3.jpg"
                     alt="image 3"
                   />
@@ -122,21 +169,21 @@
               <tr>
                 <td colspan="2">
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
                     src="images/gallery/4.jpg"
                     alt="image 4"
                   />
                 </td>
                 <td>
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
                     src="images/gallery/6.jpg"
                     alt="image 6"
                   />
                 </td>
                 <td>
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
                     src="images/gallery/7.jpg"
                     alt="image 7"
                   />
@@ -157,21 +204,21 @@
               <tr>
                 <td>
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
                     src="images/gallery/g5.webp"
                     alt="image 5"
                   />
                 </td>
                 <td colspan="2">
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
                     src="images/gallery/g4.jpg"
                     alt="image 4"
                   />
                 </td>
                 <td>
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
                     src="images/gallery/g3.jpg"
                     alt="image 3"
                   />
@@ -181,21 +228,21 @@
               <tr>
                 <td colspan="2">
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
                     src="images/gallery/g2.jpg"
                     alt="image 2"
                   />
                 </td>
                 <td>
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
                     src="images/gallery/g6.jpg"
                     alt="image 6"
                   />
                 </td>
                 <td>
                   <img
-                    class="img-fluid mx-auto tabel_img tabel_img_w"
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
                     src="images/gallery/g1.jpg"
                     alt="image 1"
                   />

@@ -9,10 +9,57 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.structure.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.min.css"
+    />
+
+    <div id="copyDialog" title="Skopiowano tekst" style="display: none">
+      <p id="copiedText" style="white-space: pre-line">
+        Tekst, który został skopiowany, pojawi się tutaj.
+      </p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
     <link rel="stylesheet" href="sabaton.css" />
 
     <title>Sabaton</title>
     <script>
+      $(function () {
+        $(".myColumn").sortable({
+          connectWith: ".myColumn",
+          handle: ".portlet-header",
+          cancel: ".portlet-toggle",
+          placeholder: "portlet-placeholder ui-corner-all",
+        });
+
+        $(".portlet")
+          .addClass(
+            "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"
+          )
+          .find(".portlet-header")
+          .addClass("ui-widget-header ui-corner-all")
+          .prepend(
+            "<span class='ui-icon ui-icon-plusthick portlet-toggle'></span>"
+          );
+        $(".portlet-toggle").on("click", function () {
+          var icon = $(this);
+          icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
+          icon.closest(".portlet").find(".portlet-content").toggle();
+        });
+        $(".portlet-content").hide();
+      });
+
       function updateMembersList() {
         let selectedBand = document.querySelector(
           'input[name="zespol_muzyczny"]:checked'
@@ -80,11 +127,21 @@
 
         if (selectedText) {
           const textToCopy =
-            selectedText + "\nSkopiowano ze strony WAI-Lavrinov";
+            selectedText + "<br>'Skopiowano ze strony WAI-Lavrinov'";
 
           // Użycie Clipboard API do ustawienia tekstu w schowku
           event.clipboardData.setData("text/plain", textToCopy);
 
+          // Wyświetlenie skopiowanego tekstu w dialogu
+          $("#copiedText").html(textToCopy);
+          $("#copyDialog").dialog({
+            modal: true,
+            buttons: {
+              Zamknij: function () {
+                $(this).dialog("close");
+              },
+            },
+          });
           console.log("Tekst został skopiowany z dopiskiem: " + textToCopy);
         }
       });
@@ -148,22 +205,52 @@
             >
           </h4>
           <hr />
-          <p>
-            Sabaton - szwedzka grupa wykonująca muzykę z pogranicza power i
-            heavy metalu. <br />
-            Tematyka większości utworów jest powiązana z wojną. Powstała w 1999
-            w Falun. <br /><br />
-            Do 2022 zespół wydał dziesięć albumów studyjnych niejednoznacznie
-            ocenianych przez krytyków muzycznych. <br /><br />
-            W 2006 i 2007 roku uznana za najlepszy zespół hardrockowy w Szwecji.
-            <br /><br />
-            Grupa wielokrotnie występowała w Polsce.
-          </p>
-          <h4 class="m-3 focus-in-expand">Albumy studyjne</h4>
+          <div class="myColumn">
+            <div class="portlet">
+              <div class="portlet-header">Sabaton</div>
+              <div class="portlet-content">
+                Sabaton - szwedzka grupa wykonująca muzykę z pogranicza power i
+                heavy metalu.
+              </div>
+            </div>
+
+            <div class="portlet">
+              <div class="portlet-header">Tematyka</div>
+              <div class="portlet-content">
+                Tematyka większości utworów jest powiązana z wojną. Powstała w
+                1999 w Falun.
+              </div>
+            </div>
+
+            <div class="portlet">
+              <div class="portlet-header">Liczba wydanych albumów</div>
+              <div class="portlet-content">
+                Do 2022 zespół wydał dziesięć albumów studyjnych
+                niejednoznacznie ocenianych przez krytyków muzycznych.
+              </div>
+            </div>
+
+            <div class="portlet">
+              <div class="portlet-header">Sukces 2006 i 2007 roku</div>
+              <div class="portlet-content">
+                W 2006 i 2007 roku uznana za najlepszy zespół hardrockowy w
+                Szwecji.
+              </div>
+            </div>
+
+            <div class="portlet">
+              <div class="portlet-header">Sabaton w Polsce</div>
+              <div class="portlet-content">
+                Grupa wielokrotnie występowała w Polsce.
+              </div>
+            </div>
+          </div>
         </div>
         <div
           class="table-responsive table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl"
         >
+          <h4 class="m-3 focus-in-expand">Albumy studyjne</h4>
+
           <table class="table table-bordered" style="text-align: center">
             <tbody>
               <tr>
