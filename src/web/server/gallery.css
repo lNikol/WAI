@@ -31,3 +31,6 @@ img:hover {
 .header {
   font-weight: 625;
 }
+.js-only {
+  display: none !important;
+}

@@ -3,38 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Sabaton</title>
 
-    <link
-      rel="stylesheet"
-      href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.structure.min.css"
-    />
+    <link href="dependences/bootstrap.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="dependences/jquery-ui.css" />
+    <link rel="stylesheet" href="dependences/jquery-ui.structure.min.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.min.css"
     />
-
-    <div id="copyDialog" title="Skopiowano tekst" style="display: none">
-      <p id="copiedText" style="white-space: pre-line">
-        Tekst, który został skopiowany, pojawi się tutaj.
-      </p>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-
     <link rel="stylesheet" href="sabaton.css" />
 
-    <title>Sabaton</title>
+    <script src="dependences/jquery-3.7.1.js"></script>
+    <script src="dependences/jquery-ui.js"></script>
+    <script src="dependences/bootstrap.bundle.min.js"></script>
+    <script src="scripts/updateMembersList.js"></script>
+    <script src="scripts/copy.js"></script>
+
     <script>
+      // Usuwam klasę js-only z elementów, gdy JS jest włączony
+      $(document).ready(function () {
+        $(".js-only").removeClass("js-only");
+      });
+
       $(function () {
         $(".myColumn").sortable({
           connectWith: ".myColumn",
@@ -59,96 +51,15 @@
         });
         $(".portlet-content").hide();
       });
-
-      function updateMembersList() {
-        let selectedBand = document.querySelector(
-          'input[name="zespol_muzyczny"]:checked'
-        ).value;
-
-        let beforeMembersList = document.getElementById("before_members_list");
-        let parent = beforeMembersList.parentNode;
-
-        let existingMembersList = document.getElementById("members-list");
-        if (existingMembersList) parent.removeChild(existingMembersList);
-
-        let membersList = document.createElement("div");
-        membersList.id = "members-list";
-
-        let label = document.createElement("label");
-        label.setAttribute("for", "ulubiony_czlonek");
-        label.textContent = "Ulubiony Członek Zespołu:";
-        membersList.appendChild(label);
-
-        membersList.appendChild(document.createElement("br"));
-
-        let sabatonMembers = [
-          "Joakim Brodén",
-          "Pär Sundström",
-          "Chris Rörland",
-          "Tommy Johansson",
-          "Hannes van Dahl",
-        ];
-
-        let threeDaysGraceMembers = [
-          "Matt Walst",
-          "Brad Walst",
-          "Barry Stock",
-          "Neil Sanderson",
-        ];
-
-        let bandMembers =
-          selectedBand === "Sabaton" ? sabatonMembers : threeDaysGraceMembers;
-
-        bandMembers.forEach(function (member) {
-          let checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.id = member;
-          checkbox.name = "ulubieni_czlonkowie";
-          checkbox.value = member;
-
-          let checkboxLabel = document.createElement("label");
-          checkboxLabel.setAttribute("for", member);
-          checkboxLabel.textContent = member;
-
-          membersList.appendChild(checkbox);
-          membersList.appendChild(checkboxLabel);
-          membersList.appendChild(document.createElement("br"));
-        });
-
-        parent.insertBefore(membersList, beforeMembersList.nextSibling);
-      }
-
-      document.addEventListener("copy", function (event) {
-        // Zapobieganie domyślnej akcji kopiowania
-        event.preventDefault();
-
-        // Pobranie zaznaczonego tekstu
-        const selectedText = window.getSelection().toString();
-
-        if (selectedText) {
-          const textToCopy =
-            selectedText + "<br>'Skopiowano ze strony WAI-Lavrinov'";
-
-          // Użycie Clipboard API do ustawienia tekstu w schowku
-          event.clipboardData.setData("text/plain", textToCopy);
-
-          // Wyświetlenie skopiowanego tekstu w dialogu
-          $("#copiedText").html(textToCopy);
-          $("#copyDialog").dialog({
-            modal: true,
-            buttons: {
-              Zamknij: function () {
-                $(this).dialog("close");
-              },
-            },
-          });
-          console.log("Tekst został skopiowany z dopiskiem: " + textToCopy);
-        }
-      });
     </script>
   </head>
 
   <body class="d-flex flex-column min-vh-100">
+    <div id="copyDialog" title="Skopiowano tekst" style="display: none">
+      <p id="copiedText" style="white-space: pre-line">
+        Tekst, który został skopiowany, pojawi się tutaj.
+      </p>
+    </div>
     <div class="container">
       <header
         class="container position-sticky bg-light text-center"
@@ -205,16 +116,16 @@
             >
           </h4>
           <hr />
-          <div class="myColumn">
-            <div class="portlet">
+          <div class="myColumn js-only">
+            <div class="portlet js-only">
               <div class="portlet-header">Sabaton</div>
               <div class="portlet-content">
-                Sabaton - szwedzka grupa wykonująca muzykę z pogranicza power i
-                heavy metalu.
+                Szwedzka grupa wykonująca muzykę z pogranicza power i heavy
+                metalu.
               </div>
             </div>
 
-            <div class="portlet">
+            <div class="portlet js-only">
               <div class="portlet-header">Tematyka</div>
               <div class="portlet-content">
                 Tematyka większości utworów jest powiązana z wojną. Powstała w
@@ -222,7 +133,7 @@
               </div>
             </div>
 
-            <div class="portlet">
+            <div class="portlet js-only">
               <div class="portlet-header">Liczba wydanych albumów</div>
               <div class="portlet-content">
                 Do 2022 zespół wydał dziesięć albumów studyjnych
@@ -230,7 +141,7 @@
               </div>
             </div>
 
-            <div class="portlet">
+            <div class="portlet js-only">
               <div class="portlet-header">Sukces 2006 i 2007 roku</div>
               <div class="portlet-content">
                 W 2006 i 2007 roku uznana za najlepszy zespół hardrockowy w
@@ -238,7 +149,7 @@
               </div>
             </div>
 
-            <div class="portlet">
+            <div class="portlet js-only">
               <div class="portlet-header">Sabaton w Polsce</div>
               <div class="portlet-content">
                 Grupa wielokrotnie występowała w Polsce.
@@ -750,24 +661,26 @@
           <label for="data">Data:</label>
           <input type="date" id="data" name="data" /><br /><br />
 
-          <label>Zespół muzyczny:</label><br />
+          <label class="js-only">Zespół muzyczny:</label><br />
           <input
             type="radio"
             id="sabaton_select"
+            class="js-only"
             name="zespol_muzyczny"
             value="Sabaton"
             onchange="updateMembersList()"
           />
-          <label for="sabaton_select">Sabaton</label><br />
+          <label for="sabaton_select" class="js-only">Sabaton</label><br />
 
           <input
             type="radio"
             id="three_days_grace"
+            class="js-only"
             name="zespol_muzyczny"
             value="Three Days Grace"
             onchange="updateMembersList()"
           />
-          <label for="three_days_grace">Three Days Grace</label
+          <label for="three_days_grace" class="js-only">Three Days Grace</label
           ><br id="before_members_list" /><br />
           <label for="album">Album:</label>
           <input type="text" id="album" name="album" /><br /><br />

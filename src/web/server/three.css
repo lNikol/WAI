@@ -16,6 +16,10 @@ input {
   animation: focus-in-expand 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
+.js-only {
+  display: none !important;
+}
+
 @-webkit-keyframes focus-in-expand {
   0% {
     letter-spacing: -0.5em;

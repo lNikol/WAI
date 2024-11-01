@@ -45,6 +45,10 @@ input {
   height: 50px;
 }
 
+.js-only {
+  display: none !important;
+}
+
 @-webkit-keyframes focus-in-expand {
   0% {
     letter-spacing: -0.5em;
