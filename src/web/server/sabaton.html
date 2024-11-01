@@ -31,38 +31,9 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="scripts/updateMembersList.js"></script>
     <script type="module" src="scripts/copy.js"></script>
-
-    <script>
-      // Usuwam klasę js-only z elementów, gdy JS jest włączony
-      $(document).ready(function () {
-        $(".js-only").removeClass("js-only");
-      });
-
-      $(function () {
-        $(".myColumn").sortable({
-          connectWith: ".myColumn",
-          handle: ".portlet-header",
-          cancel: ".portlet-toggle",
-          placeholder: "portlet-placeholder ui-corner-all",
-        });
-
-        $(".portlet")
-          .addClass(
-            "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"
-          )
-          .find(".portlet-header")
-          .addClass("ui-widget-header ui-corner-all")
-          .prepend(
-            "<span class='ui-icon ui-icon-plusthick portlet-toggle'></span>"
-          );
-        $(".portlet-toggle").on("click", function () {
-          var icon = $(this);
-          icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
-          icon.closest(".portlet").find(".portlet-content").toggle();
-        });
-        $(".portlet-content").hide();
-      });
-    </script>
+    <script type="module" src="scripts/form-handler.js"></script>
+    <script src="scripts/jsOnly.js"></script>
+    <script src="scripts/portlets.js"></script>
   </head>
 
   <body class="d-flex flex-column min-vh-100">
@@ -697,17 +668,19 @@
           <input type="text" id="album" name="album" /><br /><br />
 
           <label for="ulubiony_album">Ulubiony album:</label>
-          <select id="ulubiony_album">
-            <option value="primo">Primo Victoria</option>
-            <option value="attero">Attero Dominatus</option>
-            <option value="metalizer">Metalizer</option>
-            <option value="artOfWar">The Art of War</option>
-            <option value="coat">Coat of Arms</option>
-            <option value="rex">Carolus Rex</option>
-            <option value="heroes">Heroes</option>
-            <option value="stand">The Last Stand</option>
-            <option value="greatWar">The Great War</option>
-            <option value="endAllWars">The War to End All Wars</option>
+          <select id="ulubiony_album" name="ulubiony_album">
+            <option value="Primo Victoria">Primo Victoria</option>
+            <option value="Attero Dominatus">Attero Dominatus</option>
+            <option value="Metalizer">Metalizer</option>
+            <option value="The Art of War">The Art of War</option>
+            <option value="Coat of Arms">Coat of Arms</option>
+            <option value="Carolus Rex">Carolus Rex</option>
+            <option value="Heroes">Heroes</option>
+            <option value="The Last Stand">The Last Stand</option>
+            <option value="The Great War">The Great War</option>
+            <option value="The War to End All Wars">
+              The War to End All Wars
+            </option>
           </select>
           <br /><br />
 

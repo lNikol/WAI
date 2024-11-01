@@ -28,19 +28,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script type="module" src="scripts/copy.js"></script>
-    <script>
-      $(document).ready(function () {
-        $(".filter").click(function () {
-          let group = $(this).data("group");
-          $("img").hide();
-          $("." + group).show();
-        });
-      });
-      // Usuwam klasę js-only z elementów, gdy JS jest włączony
-      $(document).ready(function () {
-        $(".js-only").removeClass("js-only");
-      });
-    </script>
+    <script src="scripts/jsOnly.js"></script>
+    <script src="scripts/hide.js"></script>
   </head>
 
   <body class="d-flex flex-column min-vh-100">

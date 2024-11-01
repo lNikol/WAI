@@ -34,12 +34,7 @@ Jeśli nie jest, to nie wyświetlać elementów działających z JS
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
     <script type="module" src="scripts/copy.js"></script>
-    <script>
-      // Usuwam klasę js-only z elementów, gdy JS jest włączony
-      $(document).ready(function () {
-        $(".js-only").removeClass("js-only");
-      });
-    </script>
+    <script src="scripts/jsOnly.js"></script>
   </head>
   <body class="d-flex flex-column min-vh-100">
     <div id="copyDialog" title="Skopiowano tekst" style="display: none">
