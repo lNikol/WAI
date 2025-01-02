@@ -5,5 +5,7 @@ $routing = [
     '/register' => 'register',
     '/login' => 'login',
     '/logout' => 'logout',
-    '/gallery' => 'gallery'
+    '/upload' => 'upload',
+    '/gallery' => 'gallery',
+    '/success' => 'success'
 ];

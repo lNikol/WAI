@@ -154,7 +154,7 @@ function login(&$model) {
             }
             $_SESSION['user_id'] = (string) $user['_id'];
             $_SESSION['user_name'] = $user['name'];
-            return REDIRECT_PREFIX . 'gallery';
+            return REDIRECT_PREFIX . 'upload';
         } else {
             $model['error'] = 'Invalid credentials';
         }
@@ -167,4 +167,52 @@ function login(&$model) {
 function logout() {
     session_destroy();
     return REDIRECT_PREFIX . '/';
+}
+
+
+function upload(&$model) {
+    if (!isset($_SESSION['user_id'])) {
+        return REDIRECT_PREFIX . 'login';
+    }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['images'])) {
+        $files = $_FILES['images'];
+        $uploadDirectory = '../../public/images/';  
+        $maxFileSize = 2 * 1024 * 1024;  
+        $allowedExtensions = ['jpg', 'jpeg', 'png'];
+    
+        $errors = [];  
+    
+        foreach ($files['name'] as $key => $fileName) {
+            $fileTmpName = $files['tmp_name'][$key];
+            $fileSize = $files['size'][$key];
+            $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+    
+            if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
+                $errors[] = "File $fileName has an invalid format. Only JPG, JPEG, PNG are allowed.";
+            }
+            if ($fileSize > $maxFileSize) {
+                $errors[] = "File $fileName is too large. Maximum size is 2MB.";
+            }
+            if (empty($errors)) {
+                $uniqueName = uniqid() . '.' . $fileExtension;
+                $uploadPath = $uploadDirectory . $uniqueName;
+    
+                if (move_uploaded_file($fileTmpName, $uploadPath)) {
+                    $_SESSION['uploaded_images'][] = $uploadPath;
+                } else {
+                    $errors[] = "There was an error uploading file $fileName. Please try again.";
+                }
+            }
+        }
+    
+        if (!empty($errors)) {
+            $_SESSION['errors'] = $errors;
+            return 'upload_view';
+            exit;
+        }
+        return REDIRECT_PREFIX . 'success';
+    }
+    
+    // Jeżeli formularz nie został wysłany, wyświetlam formularz
+    return 'upload_view';
 }
