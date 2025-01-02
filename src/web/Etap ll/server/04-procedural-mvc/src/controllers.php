@@ -171,7 +171,8 @@ function logout() {
 
 
 function upload(&$model) {
-    if (!isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    if (!isset($user_id)) {
         return REDIRECT_PREFIX . 'login';
     }
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['images'])) {
@@ -179,7 +180,7 @@ function upload(&$model) {
         $uploadDirectory = '../../public/images/';  
         $maxFileSize = 2 * 1024 * 1024;  
         $allowedExtensions = ['jpg', 'jpeg', 'png'];
-    
+        $public = true; // zamienić na wartość z radiobutton
         $errors = [];  
     
         foreach ($files['name'] as $key => $fileName) {
@@ -195,9 +196,15 @@ function upload(&$model) {
             }
             if (empty($errors)) {
                 $uniqueName = uniqid() . '.' . $fileExtension;
-                $uploadPath = $uploadDirectory . $uniqueName;
-    
+                $user_folder = $uploadDirectory . $user_id . '/';
+                $uploadPath = $user_folder . $uniqueName;
+                
+                if(!is_dir($user_folder)){
+                    mkdir($user_folder, 0777, true);
+                }
+                
                 if (move_uploaded_file($fileTmpName, $uploadPath)) {
+                    save_image($user_id, $uniqueName, $user_folder, $public);
                     $_SESSION['uploaded_images'][] = $uploadPath;
                 } else {
                     $errors[] = "There was an error uploading file $fileName. Please try again.";

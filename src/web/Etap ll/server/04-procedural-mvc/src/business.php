@@ -88,3 +88,24 @@ function authenticate_user($email, $password) {
     }
     return false;
 }
+
+function save_image($user_id, $uniqueName, $user_folder, $public) {
+    $db = get_db();
+    $images = $db->images;
+    
+    $thumbnail = ''; //create_thumbnail_img($uniqueName);
+    $watermark = ''; //create_watermark_img($uniqueName);
+    $original_image_path = $user_folder . $uniqueName;
+    
+    $images->insertOne([
+        'author_id' => $user_id,
+        'image_name' => $uniqueName,
+        'author_folder' => $user_folder,
+        'public' => $public,
+        'original_image' => $original_image_path, // otrzymać wartości z create_thumbnail_img
+        'thumbnail' => $thumbnail, // otrzymać wartości z create_thumbnail_img
+        'watermark' => $watermark, // otrzymać wartości z create_watermark_img
+
+    ]);
+    return false;
+}
