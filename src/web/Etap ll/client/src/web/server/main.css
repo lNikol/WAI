@@ -1,0 +1,16 @@
+#menu {
+  top: 0.1px;
+}
+
+.tabel_img {
+  min-width: 60px;
+  max-width: 100px;
+  min-height: 60px;
+  max-height: 100px;
+}
+a {
+  text-decoration: none;
+}
+.js-only {
+  display: none !important;
+}

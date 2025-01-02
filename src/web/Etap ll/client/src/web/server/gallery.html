@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galeria</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.structure.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.min.css"
+    />
+
+    <link rel="stylesheet" href="gallery.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script type="module" src="scripts/copy.js"></script>
+    <script src="scripts/jsOnly.js"></script>
+    <script src="scripts/hide.js"></script>
+  </head>
+
+  <body class="d-flex flex-column min-vh-100">
+    <div id="copyDialog" title="Skopiowano tekst" style="display: none">
+      <p id="copiedText" style="white-space: pre-line">
+        Tekst, który został skopiowany, pojawi się tutaj.
+      </p>
+    </div>
+    <div class="container">
+      <header
+        class="container position-sticky bg-light text-center"
+        id="menu"
+        style="margin-left: 15px"
+      >
+        <div class="row m-1">
+          <div class="col-sm" id="home">
+            <h5><a href="main.html">Główna</a></h5>
+          </div>
+
+          <div id="gallery" class="col-sm">
+            <div>
+              <a
+                id="dropdownMenuButton"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                href="gallery.html"
+                ><h5>Galeria</h5>
+              </a>
+
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li>
+                  <a class="dropdown-item" href="gallery.html#sabatonHead"
+                    >Sabaton</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="gallery.html#threeHead"
+                    >Three days grace</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div id="sabaton" class="col-sm">
+            <h5><a href="sabaton.html">Sabaton</a></h5>
+          </div>
+
+          <div id="three" class="col-sm">
+            <h5><a href="three.html">Three days grace</a></h5>
+          </div>
+        </div>
+      </header>
+
+      <div class="container m-3" id="body">
+        <button class="filter btn btn-primary js-only" data-group="sabaton">
+          Sabaton
+        </button>
+        <button class="filter btn btn-primary js-only" data-group="threedays">
+          Three Days Grace
+        </button>
+        <p>Tutaj można znaleźć zdjęcia muzycznych zespołów</p>
+
+        <div>
+          <div>
+            <h4
+              style="margin-top: 15px; margin-bottom: 15px"
+              class="header"
+              id="sabatonHead"
+            >
+              <a href="https://pl.wikipedia.org/wiki/Sabaton" target="_blank"
+                >Sabaton</a
+              >
+            </h4>
+            <table>
+              <tr>
+                <td>
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
+                    src="images/gallery/5.jpg"
+                    alt="image 5"
+                  />
+                </td>
+
+                <td colspan="2">
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
+                    src="images/gallery/2.jpg"
+                    alt="image 2"
+                  />
+                </td>
+                <td>
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
+                    src="images/gallery/3.jpg"
+                    alt="image 3"
+                  />
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan="2">
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
+                    src="images/gallery/4.jpg"
+                    alt="image 4"
+                  />
+                </td>
+                <td>
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
+                    src="images/gallery/6.jpg"
+                    alt="image 6"
+                  />
+                </td>
+                <td>
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w sabaton"
+                    src="images/gallery/7.jpg"
+                    alt="image 7"
+                  />
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div>
+            <h4 class="header" id="threeHead">
+              <a
+                href="https://pl.wikipedia.org/wiki/Three_Days_Grace"
+                target="_blank"
+              >
+                Three days grace
+              </a>
+            </h4>
+            <table>
+              <tr>
+                <td>
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
+                    src="images/gallery/g5.webp"
+                    alt="image 5"
+                  />
+                </td>
+                <td colspan="2">
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
+                    src="images/gallery/g4.jpg"
+                    alt="image 4"
+                  />
+                </td>
+                <td>
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
+                    src="images/gallery/g3.jpg"
+                    alt="image 3"
+                  />
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan="2">
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
+                    src="images/gallery/g2.jpg"
+                    alt="image 2"
+                  />
+                </td>
+                <td>
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
+                    src="images/gallery/g6.jpg"
+                    alt="image 6"
+                  />
+                </td>
+                <td>
+                  <img
+                    class="img-fluid mx-auto tabel_img tabel_img_w threedays"
+                    src="images/gallery/g1.jpg"
+                    alt="image 1"
+                  />
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="text-center mt-auto">
+      <div class="row">
+        <div class="col-sm-12">
+          <h5>201302 Nikolai Lavrinov</h5>
+          <h6>Inf 3B sem.3, gr. pr. 6A</h6>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+WAI II etap planowanie:
+
+
+1) Model BD (obrazy, użytkownicy,...)
+user:
+user_id
+username
+email
+password
+repeated_password
+
+image:
+author_id (user_id)
+image_id
+original_img
+thumbnail_img
+watermark_img
+public
+
+2) Logowanie i rejestracja użytkowników + wszystkie wymagane warunki sprawdzenia
+2.1) Kategoria II b) i kategoria III a)
+3) Przesyłanie plików na serwer (kategoria I a) )
+3.1) Kategoria I b) i c)
+4) Wyszukiwarka zdjęć (kategoria III b) )
+5) Mechanizm sesji (kategoria II c) )
+
+
+
+MVC:
+
+1) Obsługa HTTP (frontcontroller)
+2) Logika biznesowa (controllers)
+3) Model
+4) Widok (wyświetla dane)
+
+
+
+W archiwum zip mam przykładowy model mvc. Przeanalizuj go i powiedz jak działa krok po kroku (skąd zaczyna, jak przetwarza, co zwraca, najlepiej wpisz nazwy plików) (poproszę krótkie i jasne wyjaśnienia).
+W pliku .pdf mam polecenia, które trzeba wykonać. Dla nich poprosiłbym napisać, gdzie należy umieszczyć logikę (w jakich plikach i za co będą odpowiadały te komponenty), jakie pliki trzeba dodatkowo stworzyć, jak za to zabrać się. Chodzi tu o to, jak rozpocząć pracę nad projektem, niżej mam przykładowy plan:
+1) Model BD (obrazy, użytkownicy,...)
+2) Logowanie i rejestracja użytkowników + wszystkie wymagane warunki sprawdzenia
+2.1) Kategoria II b) i kategoria III a)
+3) Przesyłanie plików na serwer (kategoria I a) )
+3.1) Kategoria I b) i c)
+4) Wyszukiwarka zdjęć (kategoria III b) )
+5) Mechanizm sesji (kategoria II c) )
+
+Mógłbyś napisać jak ten plan realizować i jakie pliki trzeba zmienić?
+
+Z góry bardzo dziękuję za taki ciężki kawał pracy
