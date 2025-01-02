@@ -199,6 +199,9 @@ function upload(&$model) {
                 $errors[] = "File $fileName is too large. Maximum size is 1MB.";
             }
             if (empty($errors)) {
+
+
+
                 $uniqueName = uniqid() . '.' . $fileExtension;
                 $user_folder = $uploadDirectory . $user_id . '/';
                 
@@ -206,14 +209,29 @@ function upload(&$model) {
                 $public = isset($public_values[$key]) ? (bool)$public_values[$key] : true;        
                 $title = isset($_POST['file_titles'][$key]) ? ($_POST['file_titles'][$key] . '.' . $fileExtension): $uniqueName;
                 $author = isset($authors[$key]) ? $authors[$key] : 'Unknown';
-                $uploadPath = $user_folder . $title;
+                $upload_path = $user_folder . $title;
 
                 if(!is_dir($user_folder)){
                     mkdir($user_folder, 0777, true);
                 }
-                if (move_uploaded_file($fileTmpName, $uploadPath)) {
-                    save_image($user_id, $user_folder, $title, $watermark, $public, $author);
-                    $_SESSION['uploaded_images'][] = $uploadPath;
+                if (move_uploaded_file($fileTmpName, $upload_path)) {
+                    $_SESSION['uploaded_images'][] = $upload_path;
+                    $watermark_path = $user_folder . 'watermark_' . $title;
+                    try {
+                        addWatermark($upload_path, $watermark_path, $watermark);
+                    } catch (Exception $e) {
+                        $errors[] = "Error creating watermark for $fileName: " . $e->getMessage();
+                    }
+                    
+                    $thumbnail_path = $user_folder . 'thumbnail_' . $title;
+                    try {
+                        createThumbnail($upload_path, $thumbnail_path, 200, 125);
+                    } catch (Exception $e) {
+                        $errors[] = "Error creating thumbnail for $fileName: " . $e->getMessage();
+                    }
+
+                    save_image($user_id, $user_folder, $title, $watermark_path, $thumbnail_path, $public, $author);
+
                 } else {
                     $errors[] = "There was an error uploading file $fileName. Please try again.";
                 }
@@ -230,4 +248,77 @@ function upload(&$model) {
     
     // Jeżeli formularz nie został wysłany, wyświetlam formularz
     return 'upload_view';
+}
+
+
+function addWatermark($sourcePath, $destinationPath, $watermarkText) {
+    $imageType = exif_imagetype($sourcePath);
+    if ($imageType == IMAGETYPE_JPEG) {
+        $image = imagecreatefromjpeg($sourcePath);
+    } elseif ($imageType == IMAGETYPE_PNG) {
+        $image = imagecreatefrompng($sourcePath);
+    } else {
+        throw new Exception("Unsupported image type.");
+    }
+
+    $imageWidth = imagesx($image);
+    $imageHeight = imagesy($image);
+
+    // Ustawienia tekstu
+    $fontSize = 20;
+    $fontFile = '../../public/fonts/centurygothic_bold.ttf'; 
+    $textColor = imagecolorallocatealpha($image, 0, 0, 0, 50);
+
+    // Wyśrodkowanie tekstu
+    $textBoundingBox = imagettfbbox($fontSize, 0, $fontFile, $watermarkText);
+    $textWidth = $textBoundingBox[2] - $textBoundingBox[0];
+    $textHeight = $textBoundingBox[1] - $textBoundingBox[7];
+    $x = ($imageWidth - $textWidth) / 2;
+    $y = ($imageHeight - $textHeight) / 2;
+
+    // Dodanie znaku wodnego
+    imagettftext($image, $fontSize, 0, $x, $y, $textColor, $fontFile, $watermarkText);
+
+    // Zapisanie obrazu
+    if ($imageType == IMAGETYPE_JPEG) {
+        imagejpeg($image, $destinationPath);
+    } elseif ($imageType == IMAGETYPE_PNG) {
+        imagepng($image, $destinationPath);
+    }
+
+    // Zwalnianie zasobów
+    imagedestroy($image);
+}
+
+
+
+function createThumbnail($sourcePath, $destinationPath, $thumbnailWidth, $thumbnailHeight) {
+    $imageType = exif_imagetype($sourcePath);
+    if ($imageType == IMAGETYPE_JPEG) {
+        $image = imagecreatefromjpeg($sourcePath);
+    } elseif ($imageType == IMAGETYPE_PNG) {
+        $image = imagecreatefrompng($sourcePath);
+    } else {
+        throw new Exception("Unsupported image type.");
+    }
+
+    $imageWidth = imagesx($image);
+    $imageHeight = imagesy($image);
+
+    // Stwórz pusty obraz miniatury
+    $thumbnail = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
+
+    // Skaluje obraz do rozmiaru miniatury
+    imagecopyresampled($thumbnail, $image, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $imageWidth, $imageHeight);
+
+    // Zapisanie miniatury
+    if ($imageType == IMAGETYPE_JPEG) {
+        imagejpeg($thumbnail, $destinationPath);
+    } elseif ($imageType == IMAGETYPE_PNG) {
+        imagepng($thumbnail, $destinationPath);
+    }
+
+    // Zwalnianie zasobów
+    imagedestroy($image);
+    imagedestroy($thumbnail);
 }

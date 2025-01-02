@@ -89,12 +89,10 @@ function authenticate_user($email, $password) {
     return false;
 }
 
-function save_image($user_id, $user_folder, $title, $watermark_text, $public, $author) {
+function save_image($user_id, $user_folder, $title, $watermark_path, $thumbnail_path, $public, $author) {
     $db = get_db();
     $images = $db->images;
     
-    $thumbnail = ''; //create_thumbnail_img($title);
-    $watermark = $watermark_text; //create_watermark_img($title, $watermark_text);
     $original_image_path = $user_folder . $title;
     
     $images->insertOne([
@@ -104,8 +102,8 @@ function save_image($user_id, $user_folder, $title, $watermark_text, $public, $a
         'author_folder' => $user_folder,
         'public' => $public,
         'original_image' => $original_image_path,
-        'thumbnail' => $thumbnail, // otrzymać wartości z create_thumbnail_img
-        'watermark' => $watermark, // otrzymać wartości z create_watermark_img
+        'thumbnail_path' => $thumbnail_path, 
+        'watermark_path' => $watermark_path,
     ]);
     return false;
 }
