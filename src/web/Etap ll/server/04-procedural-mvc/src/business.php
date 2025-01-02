@@ -89,23 +89,23 @@ function authenticate_user($email, $password) {
     return false;
 }
 
-function save_image($user_id, $uniqueName, $user_folder, $public) {
+function save_image($user_id, $user_folder, $title, $watermark_text, $public, $author) {
     $db = get_db();
     $images = $db->images;
     
-    $thumbnail = ''; //create_thumbnail_img($uniqueName);
-    $watermark = ''; //create_watermark_img($uniqueName);
-    $original_image_path = $user_folder . $uniqueName;
+    $thumbnail = ''; //create_thumbnail_img($title);
+    $watermark = $watermark_text; //create_watermark_img($title, $watermark_text);
+    $original_image_path = $user_folder . $title;
     
     $images->insertOne([
         'author_id' => $user_id,
-        'image_name' => $uniqueName,
+        'author_name' => $author,
+        'image_name' => $title,
         'author_folder' => $user_folder,
         'public' => $public,
-        'original_image' => $original_image_path, // otrzymać wartości z create_thumbnail_img
+        'original_image' => $original_image_path,
         'thumbnail' => $thumbnail, // otrzymać wartości z create_thumbnail_img
         'watermark' => $watermark, // otrzymać wartości z create_watermark_img
-
     ]);
     return false;
 }

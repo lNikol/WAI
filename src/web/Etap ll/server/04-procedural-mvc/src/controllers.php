@@ -166,45 +166,53 @@ function login(&$model) {
 
 function logout() {
     session_destroy();
-    return REDIRECT_PREFIX . '/';
+    return REDIRECT_PREFIX . 'register';
 }
 
 
 function upload(&$model) {
-    $user_id = $_SESSION['user_id'];
-    if (!isset($user_id)) {
-        return REDIRECT_PREFIX . 'login';
+    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+    
+    if (!$user_id) {
+        $user_id = isset($_SESSION['anon_user_id']) ? $_SESSION['anon_user_id'] : uniqid('anon_', true) . bin2hex(random_bytes(4));
+        $_SESSION['anon_user_id'] = $user_id;
     }
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['images'])) {
         $files = $_FILES['images'];
         $uploadDirectory = '../../public/images/';  
-        $maxFileSize = 2 * 1024 * 1024;  
+        $maxFileSize = 1 * 1024 * 1024;  
         $allowedExtensions = ['jpg', 'jpeg', 'png'];
-        $public = true; // zamienić na wartość z radiobutton
-        $errors = [];  
-    
+        $errors = [];
+        
+        $public_values = isset($_POST['public']) ? $_POST['public'] : [];
+        $authors = isset($_POST['authors']) ? $_POST['authors'] : [];
+
         foreach ($files['name'] as $key => $fileName) {
             $fileTmpName = $files['tmp_name'][$key];
             $fileSize = $files['size'][$key];
             $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-    
+
             if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
                 $errors[] = "File $fileName has an invalid format. Only JPG, JPEG, PNG are allowed.";
             }
             if ($fileSize > $maxFileSize) {
-                $errors[] = "File $fileName is too large. Maximum size is 2MB.";
+                $errors[] = "File $fileName is too large. Maximum size is 1MB.";
             }
             if (empty($errors)) {
                 $uniqueName = uniqid() . '.' . $fileExtension;
                 $user_folder = $uploadDirectory . $user_id . '/';
-                $uploadPath = $user_folder . $uniqueName;
                 
+                $watermark = isset($_POST['watermarks'][$key]) ? $_POST['watermarks'][$key] : '';
+                $public = isset($public_values[$key]) ? (bool)$public_values[$key] : true;        
+                $title = isset($_POST['file_titles'][$key]) ? ($_POST['file_titles'][$key] . '.' . $fileExtension): $uniqueName;
+                $author = isset($authors[$key]) ? $authors[$key] : 'Unknown';
+                $uploadPath = $user_folder . $title;
+
                 if(!is_dir($user_folder)){
                     mkdir($user_folder, 0777, true);
                 }
-                
                 if (move_uploaded_file($fileTmpName, $uploadPath)) {
-                    save_image($user_id, $uniqueName, $user_folder, $public);
+                    save_image($user_id, $user_folder, $title, $watermark, $public, $author);
                     $_SESSION['uploaded_images'][] = $uploadPath;
                 } else {
                     $errors[] = "There was an error uploading file $fileName. Please try again.";

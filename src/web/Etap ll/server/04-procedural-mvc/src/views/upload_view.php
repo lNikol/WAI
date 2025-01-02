@@ -4,12 +4,101 @@ if (isset($_SESSION['errors'])) {
     foreach ($_SESSION['errors'] as $error) {
         echo "<p style='color: red;'>$error</p>";
     }
-    unset($_SESSION['errors']); 
+    unset($_SESSION['errors']);
 }
 ?>
 <form action="upload" method="POST" enctype="multipart/form-data">
     <label for="images">Choose images:</label>
-    <input type="file" name="images[]" id="images" multiple required><br>
-
+    <input type="file" name="images[]" multiple id="file-input" onchange="updateFormFields()">
+    <div id="input-fields-container"></div>
     <button type="submit">Upload</button>
 </form>
+
+<script>
+function updateFormFields() {
+    let userLogin = '<?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : "guest"; ?>';
+
+    let files = document.getElementById('file-input').files;  // Tablica wybranych plików
+    let container = document.getElementById('input-fields-container');
+    
+    container.innerHTML = '';
+
+    for (let i = 0; i < files.length; i++) {
+        let inputGroup = document.createElement('div');
+        inputGroup.classList.add('input-group');
+        
+        let fileNameInput = document.createElement('input');
+        fileNameInput.type = 'text';
+        fileNameInput.name = 'file_titles[]';
+        fileNameInput.placeholder = 'Title for ' + files[i].name;
+
+        let watermarkInput = document.createElement('input');
+        watermarkInput.type = 'text';
+        watermarkInput.name = 'watermarks[]';
+        watermarkInput.placeholder = 'Enter watermark for ' + files[i].name;
+        watermarkInput.required = true;
+
+        let authorInput = document.createElement('input');
+        authorInput.type = 'text';
+        authorInput.name = 'authors[]';
+        authorInput.placeholder = 'Enter author for ' + files[i].name;
+        authorInput.value = userLogin;
+        authorInput.required = true;
+        
+
+        let fileParagraph = document.createElement('p');
+        fileParagraph.appendChild(fileNameInput);
+        fileParagraph.appendChild(watermarkInput);
+        fileParagraph.appendChild(authorInput);
+        
+        <?php if (isset($_SESSION['user_id']) && strpos($_SESSION['user_id'], 'anon') === false): ?>
+            let publicRadio = document.createElement('label');
+            publicRadio.innerHTML = '<input type="radio" name="public[' + i + ']" value="1" checked> Publiczny';
+            let privateRadio = document.createElement('label');
+            privateRadio.innerHTML = '<input type="radio" name="public[' + i + ']" value="0"> Prywatny';
+            fileParagraph.appendChild(publicRadio);
+            fileParagraph.appendChild(privateRadio);
+        <?php endif; ?>
+        
+        container.appendChild(fileParagraph);
+    }
+}
+</script>
+
+
+<style>
+.input-group {
+    margin-bottom: 10px;
+}
+
+input[readonly] {
+    background-color: #f0f0f0;
+    color: #888;
+}
+
+input[type="text"] {
+    padding: 5px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 300px;
+}
+
+p {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+</style>
