@@ -107,3 +107,16 @@ function save_image($user_id, $user_folder, $title, $watermark_path, $thumbnail_
     ]);
     return false;
 }
+
+
+function get_image_info($thumbnail_path){
+    $db = get_db();
+    $images = $db->images;
+    return $images->findOne(['thumbnail_path' => $thumbnail_path]);
+}
+
+function get_all_public_images($thumbnail_path){
+    $db = get_db();
+    $images = $db->images;
+    return $images->find(['public' => true]);
+}

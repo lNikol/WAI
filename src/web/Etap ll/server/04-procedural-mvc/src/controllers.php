@@ -170,6 +170,8 @@ function logout() {
 }
 
 
+// dodać wszędzie przycisk wylogowania, na każdej stronie
+// sprawdzić prawo na modyfikację folderów przez deweloperski porty
 function upload(&$model) {
     $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
     
@@ -181,56 +183,74 @@ function upload(&$model) {
         $files = $_FILES['images'];
         $uploadDirectory = '../../public/images/';  
         $maxFileSize = 1 * 1024 * 1024;  
-        $allowedExtensions = ['jpg', 'jpeg', 'png'];
+        $allowedMimeTypes = ['image/jpeg', 'image/png'];
         $errors = [];
         
         $public_values = isset($_POST['public']) ? $_POST['public'] : [];
         $authors = isset($_POST['authors']) ? $_POST['authors'] : [];
+        $watermarks = isset($_POST['watermarks']) ? $_POST['watermarks'] : [];
+        $file_titles = isset($_POST['file_titles']) ? $_POST['file_titles'] : [];
 
         foreach ($files['name'] as $key => $fileName) {
             $fileTmpName = $files['tmp_name'][$key];
             $fileSize = $files['size'][$key];
-            $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
 
-            if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
-                $errors[] = "File $fileName has an invalid format. Only JPG, JPEG, PNG are allowed.";
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $fileMimeType = $finfo->file($fileTmpName);
+
+            if (!in_array($fileMimeType, $allowedMimeTypes)) {
+                $errors[] = "File $fileName has an invalid format. Only JPG and PNG are allowed.";
             }
+
             if ($fileSize > $maxFileSize) {
                 $errors[] = "File $fileName is too large. Maximum size is 1MB.";
+            } else if($fileSize === 0){
+                $errors[] = "File $fileName is too small. Minimum size is > 0 bytes.";
             }
+
+            $watermark = isset($watermarks[$key]) ? $watermarks[$key] : '';
+            $file_title  = isset($file_titles[$key]) ? $file_titles[$key] : pathinfo($fileName, PATHINFO_FILENAME);
+
+            if (strlen($watermark) < 1 || strlen($watermark) > 70) {
+                $errors[] = "Watermark for file $fileName must be between 1 and 70 characters long.";
+            }
+
+            if (strlen($file_title) > 70) {
+                $errors[] = "Title for file $fileName must not exceed 70 characters.";
+            }
+
             if (empty($errors)) {
-
-
-
-                $uniqueName = uniqid() . '.' . $fileExtension;
-                $user_folder = $uploadDirectory . $user_id . '/';
-                
-                $watermark = isset($_POST['watermarks'][$key]) ? $_POST['watermarks'][$key] : '';
+                $uniqueName = uniqid() . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
+                $userFolder = $uploadDirectory . $user_id . '/';
+                     
+                $title = strlen($file_title) > 0 ? $file_title . '.' . pathinfo($fileName, PATHINFO_EXTENSION) : $uniqueName;
                 $public = isset($public_values[$key]) ? (bool)$public_values[$key] : true;        
-                $title = isset($_POST['file_titles'][$key]) ? ($_POST['file_titles'][$key] . '.' . $fileExtension): $uniqueName;
                 $author = isset($authors[$key]) ? $authors[$key] : 'Unknown';
-                $upload_path = $user_folder . $title;
+                $upload_path = $userFolder . $title;
 
-                if(!is_dir($user_folder)){
-                    mkdir($user_folder, 0777, true);
+                if(!is_dir($userFolder)){
+                    mkdir($userFolder, 0777, true);
                 }
                 if (move_uploaded_file($fileTmpName, $upload_path)) {
                     $_SESSION['uploaded_images'][] = $upload_path;
-                    $watermark_path = $user_folder . 'watermark_' . $title;
+                    $watermark_path = $userFolder . 'watermark_' . $title;
                     try {
                         addWatermark($upload_path, $watermark_path, $watermark);
                     } catch (Exception $e) {
                         $errors[] = "Error creating watermark for $fileName: " . $e->getMessage();
                     }
                     
-                    $thumbnail_path = $user_folder . 'thumbnail_' . $title;
+                    $thumbnail_path = $userFolder . 'thumbnail_' . $title;
                     try {
                         createThumbnail($upload_path, $thumbnail_path, 200, 125);
                     } catch (Exception $e) {
                         $errors[] = "Error creating thumbnail for $fileName: " . $e->getMessage();
                     }
-
-                    save_image($user_id, $user_folder, $title, $watermark_path, $thumbnail_path, $public, $author);
+                    try {
+                        save_image($user_id, $userFolder, $title, $watermark_path, $thumbnail_path, $public, $author);
+                    } catch (Exception $e) {
+                        $errors[] = "Error druging save an image for $fileName: " . $e->getMessage();
+                    }
 
                 } else {
                     $errors[] = "There was an error uploading file $fileName. Please try again.";
@@ -291,7 +311,6 @@ function addWatermark($sourcePath, $destinationPath, $watermarkText) {
 }
 
 
-
 function createThumbnail($sourcePath, $destinationPath, $thumbnailWidth, $thumbnailHeight) {
     $imageType = exif_imagetype($sourcePath);
     if ($imageType == IMAGETYPE_JPEG) {
@@ -321,4 +340,71 @@ function createThumbnail($sourcePath, $destinationPath, $thumbnailWidth, $thumbn
     // Zwalnianie zasobów
     imagedestroy($image);
     imagedestroy($thumbnail);
+}
+
+
+function gallery(&$model, $page = 1, $itemsPerPage = 2) {
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $errors = [];
+    $uploadDirectory = '../../public/images/';
+    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : "guest";
+    if ($user_id == "guest" || !$user_id) {
+        $errors[] = "User not logged in.";
+    }
+
+    $userFolder = $uploadDirectory . $user_id . '/';
+
+    if (!is_dir($userFolder)) {
+        $errors[] = "No images found for the user.";
+        $model = [
+            'thumbnails' => [],
+            'userFolder' => $userFolder,
+            'currentPage' => $page,
+            'totalPages' => 0
+        ];
+        $_SESSION['errors'] = $errors;
+        return 'gallery_view';
+    }
+
+    $thumbnails = array_filter(scandir($userFolder), function($file) use ($userFolder) {
+        return is_file($userFolder . $file) && strpos($file, 'thumbnail_') === 0;
+    });
+
+    $thumbnailsWithMetadata = array_map(function ($thumbnail) use ($userFolder) {
+        $imageInfo = null;
+        try {
+            $imageInfo = get_image_info($userFolder . $thumbnail);
+        } catch (Exception $e) {
+            $errors[] = "Error creating watermark for $fileName: " . $e->getMessage();
+        }
+        return [
+            'thumbnail' => $thumbnail,
+            'image_name' => isset($imageInfo)? $imageInfo['image_name'] : basename($thumbnail), 
+            'author' => isset($imageInfo)? $imageInfo['author_name'] : "Unknown", 
+            'isPublic' => isset($imageInfo['public']) ? $imageInfo['public'] : true,
+        ];
+    }, $thumbnails);
+
+    $totalItems = count($thumbnails);
+    echo "totalItems: " . $totalItems;
+    $totalPages = ceil($totalItems / $itemsPerPage);
+    echo " totalPages: " . $totalPages;
+
+    $currentPage = max(1, min($totalPages, $page));
+    $offset = ($currentPage - 1) * $itemsPerPage;
+    $paginatedThumbnails = array_slice($thumbnailsWithMetadata, $offset, $itemsPerPage);
+    
+    $model = [
+        'thumbnails' => $paginatedThumbnails,
+        'userFolder' => $userFolder,
+        'currentPage' => $currentPage,
+        'totalPages' => $totalPages
+    ];
+
+    if (!empty($errors)) {
+        $_SESSION['errors'] = $errors;
+        return 'gallery_view';
+        exit;
+    }
+    return 'gallery_view';
 }
