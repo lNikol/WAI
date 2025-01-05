@@ -41,8 +41,6 @@ if (isset($_SESSION['errors'])) {
 }
 
 .gallery img {
-    width: 150px;
-    height: auto;
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 5px;

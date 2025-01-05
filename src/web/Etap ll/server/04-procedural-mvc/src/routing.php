@@ -6,6 +6,7 @@ $routing = [
     '/login' => 'login',
     '/logout' => 'logout',
     '/upload' => 'upload',
-    '/gallery' => 'gallery',
+    '/gallery' => 'gallery_private',
+    '/public' => 'gallery_public',
     '/success' => 'success'
 ];

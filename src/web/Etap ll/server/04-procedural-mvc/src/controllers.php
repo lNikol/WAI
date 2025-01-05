@@ -343,13 +343,15 @@ function createThumbnail($sourcePath, $destinationPath, $thumbnailWidth, $thumbn
 }
 
 
-function gallery(&$model, $page = 1, $itemsPerPage = 2) {
+function gallery_private(&$model, $page = 1, $itemsPerPage = 2) {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $errors = [];
     $uploadDirectory = '../../public/images/';
     $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : "guest";
     if ($user_id == "guest" || !$user_id) {
         $errors[] = "User not logged in.";
+        $_SESSION['errors'] = $errors;
+        return REDIRECT_PREFIX . 'public';
     }
 
     $userFolder = $uploadDirectory . $user_id . '/';
@@ -386,9 +388,7 @@ function gallery(&$model, $page = 1, $itemsPerPage = 2) {
     }, $thumbnails);
 
     $totalItems = count($thumbnails);
-    echo "totalItems: " . $totalItems;
     $totalPages = ceil($totalItems / $itemsPerPage);
-    echo " totalPages: " . $totalPages;
 
     $currentPage = max(1, min($totalPages, $page));
     $offset = ($currentPage - 1) * $itemsPerPage;
@@ -407,4 +407,50 @@ function gallery(&$model, $page = 1, $itemsPerPage = 2) {
         exit;
     }
     return 'gallery_view';
+}
+
+function gallery_public(&$model, $page = 1, $itemsPerPage = 4) {
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $errors = [];
+
+    $publicImages = get_all_public_images();
+
+    if (empty($publicImages)) {
+        $errors[] = "No public images found.";
+        $model = [
+            'thumbnails' => [],
+            'currentPage' => $page,
+            'totalPages' => 0
+        ];
+        $_SESSION['errors'] = $errors;
+        return 'gallery_public_view';
+    }
+
+    $thumbnailsWithMetadata = array_map(function ($image) {
+      return [
+            'thumbnail_path' => isset($image['thumbnail_path'])? $image['thumbnail_path'] : $image['original_image'],
+            'watermark_path' => isset($image['watermark_path'])? $image['watermark_path'] : $image['original_image'],
+            'image_name' => isset($image['image_name']) ? $image['image_name'] : "Unknown name",
+            'author' => isset($image['author_name']) ? $image['author_name'] : "Unknown", 
+            'isPublic' => isset($image['public']) ? $image['public'] : true,
+        ];
+    }, $publicImages);
+
+    $totalItems = count($thumbnailsWithMetadata);
+    $totalPages = ceil($totalItems / $itemsPerPage);
+    $currentPage = max(1, min($totalPages, $page));
+    $offset = ($currentPage - 1) * $itemsPerPage;
+    $paginatedThumbnails = array_slice($thumbnailsWithMetadata, $offset, $itemsPerPage);
+    
+    $model = [
+        'thumbnails' => $paginatedThumbnails,
+        'currentPage' => $currentPage,
+        'totalPages' => $totalPages
+    ];
+
+    if (!empty($errors)) {
+        $_SESSION['errors'] = $errors;
+        return 'gallery_public_view';
+    }
+    return 'gallery_public_view';
 }
