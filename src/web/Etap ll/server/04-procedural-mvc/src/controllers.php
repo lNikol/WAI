@@ -545,3 +545,36 @@ function remove_selected() {
 
     return 'selected_gallery_view';
 }
+
+function search_image(){
+    return 'search_image_view';
+}
+
+function get_images_by_title($title) {
+    $db = get_db(); // Funkcja do połączenia z bazą danych
+    $images = $db->images;
+    
+    // Wyszukujemy zdjęcia, których tytuł zawiera frazę
+    $cursor = $images->find([
+        'image_name' => new MongoDB\BSON\Regex($title, 'i') // 'i' oznacza ignorowanie wielkości liter
+    ]);
+    
+    return iterator_to_array($cursor);
+}
+
+if (isset($_GET['query'])) {
+    $query = $_GET['query'];
+    $images = get_images_by_title($query);
+
+    // Generujemy HTML z miniaturkami zdjęć
+    if (!empty($images)) {
+        foreach ($images as $image) {
+            echo '<div class="thumbnail">';
+            echo '<img src="' . htmlspecialchars($image['thumbnail_path']) . '" alt="' . htmlspecialchars($image['image_name']) . '">';
+            echo '<p>' . htmlspecialchars($image['image_name']) . '</p>';
+            echo '</div>';
+        }
+    } else {
+        echo '<p>Brak wyników dla podanego tytułu.</p>';
+    }
+}
