@@ -115,6 +115,14 @@ function get_image_info($thumbnail_path){
     return $images->findOne(['thumbnail_path' => $thumbnail_path]);
 }
 
+
+function get_image_by_id($id){
+    $db = get_db();
+    $images = $db->images;
+    return $images->findOne(['_id' => $id]);
+}
+
+
 function get_all_public_images(){
     $db = get_db();
     $images = $db->images;

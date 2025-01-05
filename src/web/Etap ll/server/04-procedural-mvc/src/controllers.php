@@ -384,6 +384,7 @@ function gallery_private(&$model, $page = 1, $itemsPerPage = 2) {
             'image_name' => isset($imageInfo)? $imageInfo['image_name'] : basename($thumbnail), 
             'author' => isset($imageInfo)? $imageInfo['author_name'] : "Unknown", 
             'isPublic' => isset($imageInfo['public']) ? $imageInfo['public'] : true,
+            'id' => $imageInfo['_id']
         ];
     }, $thumbnails);
 
@@ -414,7 +415,6 @@ function gallery_public(&$model, $page = 1, $itemsPerPage = 4) {
     $errors = [];
 
     $publicImages = get_all_public_images();
-
     if (empty($publicImages)) {
         $errors[] = "No public images found.";
         $model = [
@@ -433,6 +433,7 @@ function gallery_public(&$model, $page = 1, $itemsPerPage = 4) {
             'image_name' => isset($image['image_name']) ? $image['image_name'] : "Unknown name",
             'author' => isset($image['author_name']) ? $image['author_name'] : "Unknown", 
             'isPublic' => isset($image['public']) ? $image['public'] : true,
+            'id' => $image['_id']
         ];
     }, $publicImages);
 
@@ -453,4 +454,94 @@ function gallery_public(&$model, $page = 1, $itemsPerPage = 4) {
         return 'gallery_public_view';
     }
     return 'gallery_public_view';
+}
+
+function gallery_selected(&$model) {
+    // zmienić!
+    
+    if (!isset($_SESSION['selected_images']) || empty($_SESSION['selected_images'])) {
+        $model = ['thumbnails' => []];
+        return 'selected_gallery_view';
+    }
+
+    $db = get_db();
+    $images = $db->images;
+    $selectedImages = $_SESSION['selected_images'];
+    $thumbnails = iterator_to_array($images->find(['_id' => ['$in' => $selectedImages]]));
+    
+    $model = ['thumbnails' => $thumbnails];
+    return 'selected_gallery_view';
+}
+
+
+function save_selected() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_images'])) {
+        $selectedIds = $_POST['selected_images'];
+        $images = [];
+        $errors = [];
+
+        // Pobieramy informacje o nowych zdjęciach
+        foreach ($selectedIds as $id) {
+            try {
+                $image = get_image_by_id(new MongoDB\BSON\ObjectId($id));
+                if ($image) {
+                    $images[] = (array) $image;
+                } else {
+                    throw new Exception("Nie znaleziono obrazu o ID: " . htmlspecialchars($id));
+                }
+            } catch (Exception $e) {
+                $errors[] = "Błąd podczas pobierania informacji o obrazie $id: " . $e->getMessage();
+            }
+        }
+
+        // Jeśli sesja już zawiera wybrane zdjęcia, łączymy je z nowymi
+        if (isset($_SESSION['selected_images']) && is_array($_SESSION['selected_images'])) {
+            // Usuwamy duplikaty na podstawie `_id`
+            $existingImages = $_SESSION['selected_images'];
+            $images = array_merge($existingImages, $images);
+            $images = array_unique($images, SORT_REGULAR); // Usuwanie duplikatów
+        }
+
+        // Zapisujemy do sesji
+        $_SESSION['selected_images'] = $images;
+
+        if (!empty($errors)) {
+            $_SESSION['errors'] = $errors;
+        }
+
+        return 'selected_gallery_view';
+    }
+
+    return 'gallery_public_view';
+}
+
+function remove_selected() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_images'])) {
+        $removeIds = $_POST['remove_images']; // Lista ID zdjęć do usunięcia
+        $errors = [];
+        if (!isset($_SESSION['selected_images']) || empty($_SESSION['selected_images'])) {
+            $errors[] = "Brak wybranych zdjęć w sesji.";
+            if (!empty($errors)) {
+                $_SESSION['errors'] = $errors;
+                return 'selected_gallery_view';
+            }
+            return 'selected_gallery_view';
+        }
+
+        // Filtrujemy sesję, pozostawiając tylko te zdjęcia, których ID nie są w $removeIds
+        $_SESSION['selected_images'] = array_filter($_SESSION['selected_images'], function ($image) use ($removeIds) {
+            return !in_array($image['_id'], $removeIds);
+        });
+
+        echo count($removeIds) . " <-- count of images to remove  ";
+        echo count($_SESSION['selected_images']) . " <-- session count after removal ";
+        
+        if (!empty($errors)) {
+            $_SESSION['errors'] = $errors;
+            return 'selected_gallery_view';
+        }
+        return 'selected_gallery_view';
+    }
+
+    return 'selected_gallery_view';
 }
