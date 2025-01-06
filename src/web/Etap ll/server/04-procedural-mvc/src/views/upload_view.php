@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Images</title>
+</head>
+<body>
 <h1>Upload Images</h1>
 <?php
 if (isset($_SESSION['errors'])) {
@@ -14,7 +22,6 @@ if (isset($_SESSION['errors'])) {
         <li><a href="upload">Upload Image</a></li>
         <li><a href="save_selected">Selected Images</a></li>
         
-        
         <?php if (isset($_SESSION['user_id'])): ?>
             <li><a href="logout">Logout</a></li>
         <?php else: ?>
@@ -24,7 +31,6 @@ if (isset($_SESSION['errors'])) {
     </ul>
 </nav>
 
-
 <form action="upload" method="POST" enctype="multipart/form-data">
     <label for="images">Choose images:</label>
     <input type="file" name="images[]" multiple id="file-input" onchange="updateFormFields()">
@@ -33,10 +39,10 @@ if (isset($_SESSION['errors'])) {
 </form>
 
 <script>
-function updateFormFields() {
+    function updateFormFields() {
     let userLogin = '<?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : "guest"; ?>';
 
-    let files = document.getElementById('file-input').files;  // Tablica wybranych plików
+    let files = document.getElementById('file-input').files;
     let container = document.getElementById('input-fields-container');
     
     container.innerHTML = '';
@@ -63,7 +69,6 @@ function updateFormFields() {
         authorInput.value = userLogin;
         authorInput.required = true;
         
-
         let fileParagraph = document.createElement('p');
         fileParagraph.appendChild(fileNameInput);
         fileParagraph.appendChild(watermarkInput);
@@ -82,7 +87,6 @@ function updateFormFields() {
     }
 }
 </script>
-
 
 <style>
 .input-group {
@@ -123,7 +127,7 @@ button:hover {
 nav {
     background-color: #333;
     font-family: Arial, sans-serif;
-    margin-bottom:5px;
+    margin-bottom: 5px;
 }
 
 .menu {
@@ -149,3 +153,5 @@ nav {
     background-color: #575757;
 }
 </style>
+</body>
+</html>

@@ -23,57 +23,57 @@
     </ul>
 </nav>
 
-        <?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
-            <div class="error-messages">
-                <?php foreach ($_SESSION['errors'] as $error): ?>
-                    <p style='color: red;'><?= htmlspecialchars($error) ?></p>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-
-        <div class="container">
-        <h1>Publiczna Galeria Zdjęć</h1>
-        <form method="post" action="save_selected">
-            <div class="gallery">
-                <?php if (!empty($thumbnails)): ?>
-                    <div class="thumbnails">
-                        <?php foreach ($thumbnails as $thumbnail): ?>
-                            <div class="thumbnail-item">
-                                <label for="image-<?= htmlspecialchars($thumbnail['id']) ?>">
-                                    <a href="<?= htmlspecialchars($thumbnail['watermark_path']) ?>" target="_blank">
-                                        <img src="<?= htmlspecialchars($thumbnail['thumbnail_path']) ?>" alt="<?= htmlspecialchars($thumbnail['image_name']) ?>">
-                                    </a>
-                                    <div class="image-info">
-                                        <p><strong>ID:
-                                        <input type="checkbox" id="image-<?= htmlspecialchars($thumbnail['id']) ?>" 
-                                            name="selected_images[]" 
-                                            value="<?= htmlspecialchars($thumbnail['id']) ?>" 
-                                            <?= isset($_SESSION['selected_images']) && in_array($thumbnail['id'], array_column($_SESSION['selected_images'], '_id')) ? 'checked' : '' ?>>
-                                        </strong><?= htmlspecialchars($thumbnail['id']) ?></p>
-                                            
-                                        <p><strong>Autor:</strong> <?= htmlspecialchars($thumbnail['author']) ?></p>
-                                        <p><strong>Status:</strong> <?= $thumbnail['isPublic'] ? 'Publiczne' : 'Prywatne' ?></p>
-                                        <p><strong>Tytuł:</strong> <?= htmlspecialchars($thumbnail['image_name']) ?></p>
-                                    </div>
-                                </label>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php else: ?>
-                    <p>Brak publicznych zdjęć.</p>
-                <?php endif; ?>
-            </div>
-    <button type="submit">Zapamiętaj wybrane</button>
-</form>
-
-        <?php if ($totalPages > 1): ?>
-            <div class="pagination">
-                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                    <a href="?page=<?= $i ?>" class="<?= $i === $currentPage ? 'active' : '' ?>"><?= $i ?></a>
-                <?php endfor; ?>
-            </div>
-        <?php endif; ?>
+<?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
+    <div class="error-messages">
+        <?php foreach ($_SESSION['errors'] as $error): ?>
+            <p style='color: red;'><?= htmlspecialchars($error) ?></p>
+        <?php endforeach; ?>
     </div>
+<?php endif; ?>
+
+<div class="container">
+    <h1>Publiczna Galeria Zdjęć</h1>
+    <form method="post" action="save_selected">
+        <div class="gallery">
+            <?php if (!empty($thumbnails)): ?>
+                <div class="thumbnails">
+                    <?php foreach ($thumbnails as $thumbnail): ?>
+                        <div class="thumbnail-item">
+                            <label for="image-<?= htmlspecialchars($thumbnail['id']) ?>">
+                                <a href="<?= htmlspecialchars($thumbnail['watermark_path']) ?>" target="_blank">
+                                    <img src="<?= htmlspecialchars($thumbnail['thumbnail_path']) ?>" alt="<?= htmlspecialchars($thumbnail['image_name']) ?>">
+                                </a>
+                                <div class="image-info">
+                                    <p><strong>ID:
+                                    <input type="checkbox" id="image-<?= htmlspecialchars($thumbnail['id']) ?>" 
+                                        name="selected_images[]" 
+                                        value="<?= htmlspecialchars($thumbnail['id']) ?>" 
+                                        <?= isset($_SESSION['selected_images']) && in_array($thumbnail['id'], array_column($_SESSION['selected_images'], '_id')) ? 'checked' : '' ?>>
+                                    </strong><?= htmlspecialchars($thumbnail['id']) ?></p>
+                                        
+                                    <p><strong>Autor:</strong> <?= htmlspecialchars($thumbnail['author']) ?></p>
+                                    <p><strong>Status:</strong> <?= $thumbnail['isPublic'] ? 'Publiczne' : 'Prywatne' ?></p>
+                                    <p><strong>Tytuł:</strong> <?= htmlspecialchars($thumbnail['image_name']) ?></p>
+                                </div>
+                            </label>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p>Brak publicznych zdjęć.</p>
+            <?php endif; ?>
+        </div>
+        <button type="submit">Zapamiętaj wybrane</button>
+    </form>
+
+    <?php if ($totalPages > 1): ?>
+        <div class="pagination">
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="?page=<?= $i ?>" class="<?= $i === $currentPage ? 'active' : '' ?>"><?= $i ?></a>
+            <?php endfor; ?>
+        </div>
+    <?php endif; ?>
+</div>
 </body>
 </html>
 <style>
@@ -138,10 +138,11 @@
     background-color: #333;
     color: #fff;
 }
+
 nav {
     background-color: #333;
     font-family: Arial, sans-serif;
-    margin-bottom:5px;
+    margin-bottom: 5px;
 }
 
 .menu {

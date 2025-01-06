@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prywatna Galeria Zdjęć</title>
+</head>
+<body>
 <?php
 if (isset($_SESSION['errors'])) {
     foreach ($_SESSION['errors'] as $error) {
@@ -6,13 +14,13 @@ if (isset($_SESSION['errors'])) {
     unset($_SESSION['errors']);
 }
 ?>
+
 <nav>
     <ul class="menu">
         <li><a href="public">Gallery</a></li>
         <li><a href="search_image">Search Image</a></li>
         <li><a href="upload">Upload Image</a></li>
         <li><a href="save_selected">Selected Images</a></li>
-        
         
         <?php if (isset($_SESSION['user_id'])): ?>
             <li><a href="logout">Logout</a></li>
@@ -24,11 +32,11 @@ if (isset($_SESSION['errors'])) {
 </nav>
 
 <div class="gallery">
-    <?php if (!empty($model['thumbnails'])): ?>
-        <?php foreach ($model['thumbnails'] as $thumbnailData): ?>
+    <?php if (!empty($thumbnails)): ?>
+        <?php foreach ($thumbnails as $thumbnailData): ?>
             <div class="gallery-item">
-                <a href="<?= $model['userFolder'] . str_replace('thumbnail_', 'watermark_', $thumbnailData['thumbnail']); ?>" target="_blank">
-                    <img src="<?= $model['userFolder'] . $thumbnailData['thumbnail']; ?>" alt="Image thumbnail">
+                <a href="<?= htmlspecialchars($thumbnailData['watermark']); ?>" target="_blank">
+                    <img src="<?= htmlspecialchars($thumbnailData['thumbnail']); ?>" alt="Image thumbnail">
                 </a>
                 <p>Author: <?= htmlspecialchars($thumbnailData['author']); ?></p>
                 <p>Status: <?= $thumbnailData['isPublic'] ? 'Public' : 'Private'; ?></p>
@@ -40,12 +48,12 @@ if (isset($_SESSION['errors'])) {
 </div>
 
 <div class="pagination">
-    <?php if ($model['currentPage'] > 1): ?>
-        <a href="?page=<?= $model['currentPage'] - 1; ?>">&laquo; Previous</a>
+    <?php if ($currentPage > 1): ?>
+        <a href="?page=<?= $currentPage - 1; ?>">&laquo; Previous</a>
     <?php endif; ?>
 
-    <?php if ($model['currentPage'] < $model['totalPages']): ?>
-        <a href="?page=<?= $model['currentPage'] + 1; ?>">Next &raquo;</a>
+    <?php if ($currentPage < $totalPages): ?>
+        <a href="?page=<?= $currentPage + 1; ?>">Next &raquo;</a>
     <?php endif; ?>
 </div>
 
@@ -82,7 +90,7 @@ if (isset($_SESSION['errors'])) {
 nav {
     background-color: #333;
     font-family: Arial, sans-serif;
-    margin-bottom:5px;
+    margin-bottom: 5px;
 }
 
 .menu {
@@ -108,3 +116,5 @@ nav {
     background-color: #575757;
 }
 </style>
+</body>
+</html>

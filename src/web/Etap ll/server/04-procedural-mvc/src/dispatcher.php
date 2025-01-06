@@ -2,12 +2,12 @@
 
 const REDIRECT_PREFIX = 'redirect:';
 
-function dispatch($routing, $action_url)
+function dispatch($routing, $action_url, $userController, $imageController)
 {
     $controller_name = $routing[$action_url];
 
     $model = [];
-    $view_name = $controller_name($model);
+    $view_name = $controller_name($userController, $imageController, $model);
     build_response($view_name, $model);
 }
 
@@ -30,3 +30,4 @@ function render($view_name, $model)
     extract($model);
     include 'views/' . $view_name . '.php';
 }
+

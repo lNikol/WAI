@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wybrane Zdjęcia</title>
+</head>
+<body>
 <?php
 if (isset($_SESSION['errors'])) {
     foreach ($_SESSION['errors'] as $error) {
@@ -6,13 +14,13 @@ if (isset($_SESSION['errors'])) {
     unset($_SESSION['errors']);
 }
 ?>
+
 <nav>
     <ul class="menu">
         <li><a href="public">Gallery</a></li>
         <li><a href="search_image">Search Image</a></li>
         <li><a href="upload">Upload Image</a></li>
         <li><a href="save_selected">Selected Images</a></li>
-        
         
         <?php if (isset($_SESSION['user_id'])): ?>
             <li><a href="logout">Logout</a></li>
@@ -22,6 +30,7 @@ if (isset($_SESSION['errors'])) {
         <?php endif; ?>
     </ul>
 </nav>
+
 <div class="container">
     <h1>Wybrane Zdjęcia</h1>
 
@@ -101,30 +110,10 @@ if (isset($_SESSION['errors'])) {
     text-align: center;
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.pagination a {
-    text-decoration: none;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    color: #333;
-    background-color: #f9f9f9;
-}
-
-.pagination a.active {
-    background-color: #333;
-    color: #fff;
-}
 nav {
     background-color: #333;
     font-family: Arial, sans-serif;
-    margin-bottom:5px;
+    margin-bottom: 5px;
 }
 
 .menu {
@@ -150,3 +139,5 @@ nav {
     background-color: #575757;
 }
 </style>
+</body>
+</html>
