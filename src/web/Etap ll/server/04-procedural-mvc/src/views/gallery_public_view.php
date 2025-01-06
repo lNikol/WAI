@@ -6,17 +6,16 @@
     <title>Publiczna Galeria Zdjęć</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Publiczna Galeria Zdjęć</h1>
-        
-        <?php if (isset($errors) && !empty($errors)): ?>
+        <?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
             <div class="error-messages">
-                <?php foreach ($errors as $error): ?>
-                    <p class="error"><?= htmlspecialchars($error) ?></p>
+                <?php foreach ($_SESSION['errors'] as $error): ?>
+                    <p style='color: red;'><?= htmlspecialchars($error) ?></p>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
 
+        <div class="container">
+        <h1>Publiczna Galeria Zdjęć</h1>
         <form method="post" action="save_selected">
             <div class="gallery">
                 <?php if (!empty($thumbnails)): ?>
@@ -33,7 +32,7 @@
                                             name="selected_images[]" 
                                             value="<?= htmlspecialchars($thumbnail['id']) ?>" 
                                             <?= isset($_SESSION['selected_images']) && in_array($thumbnail['id'], array_column($_SESSION['selected_images'], '_id')) ? 'checked' : '' ?>>
-                                        </strong></p>
+                                        </strong><?= htmlspecialchars($thumbnail['id']) ?></p>
                                             
                                         <p><strong>Autor:</strong> <?= htmlspecialchars($thumbnail['author']) ?></p>
                                         <p><strong>Status:</strong> <?= $thumbnail['isPublic'] ? 'Publiczne' : 'Prywatne' ?></p>

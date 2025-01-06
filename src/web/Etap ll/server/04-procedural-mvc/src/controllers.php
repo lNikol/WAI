@@ -2,115 +2,6 @@
 require_once 'business.php';
 require_once 'controller_utils.php';
 
-
-function products(&$model)
-{
-    $products = get_products();
-    $model['products'] = $products;
-
-    return 'products_view';
-}
-
-function product(&$model)
-{
-    if (!empty($_GET['id'])) {
-        $id = $_GET['id'];
-
-        if ($product = get_product($id)) {
-            $model['product'] = $product;
-            return 'product_view';
-        }
-    }
-
-    http_response_code(404);
-    exit;
-}
-
-function edit(&$model)
-{
-    $product = [
-        'name' => null,
-        'price' => null,
-        'description' => null,
-        '_id' => null
-    ];
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (!empty($_POST['name']) &&
-            !empty($_POST['price']) /* && ...*/
-        ) {
-            $id = isset($_POST['id']) ? $_POST['id'] : null;
-
-            $product = [
-                'name' => $_POST['name'],
-                'price' => (int)$_POST['price'],
-                'description' => $_POST['description']
-            ];
-
-            if (save_product($id, $product)) {
-                return 'redirect:products';
-            }
-        }
-    } elseif (!empty($_GET['id'])) {
-        $product = get_product($_GET['id']);
-    }
-
-    $model['product'] = $product;
-
-    return 'edit_view';
-}
-
-function delete(&$model)
-{
-    if (!empty($_REQUEST['id'])) {
-        $id = $_REQUEST['id'];
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            delete_product($id);
-            return 'redirect:products';
-
-        } else {
-            if ($product = get_product($id)) {
-                $model['product'] = $product;
-                return 'delete_view';
-            }
-        }
-    }
-
-    http_response_code(404);
-    exit;
-}
-
-function cart(&$model)
-{
-    $model['cart'] = get_cart();
-    return 'partial/cart_view';
-}
-
-function add_to_cart()
-{
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-        $id = $_POST['id'];
-        $product = get_product($id);
-
-        $cart = &get_cart();
-        $amount = isset($cart[$id]) ? $cart[$id]['amount'] + 1 : 1;
-
-        $cart[$id] = ['name' => $product['name'], 'amount' => $amount];
-
-        return 'redirect:' . $_SERVER['HTTP_REFERER'];
-    }
-}
-
-function clear_cart()
-{
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $_SESSION['cart'] = [];
-        return 'redirect:' . $_SERVER['HTTP_REFERER'];
-    }
-}
-
-
 function register(&$model) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = $_POST['name'];
@@ -139,7 +30,6 @@ function register(&$model) {
 
     return 'register_view';
 }
-
 
 
 function login(&$model) {
@@ -174,7 +64,7 @@ function logout() {
 // sprawdzić prawo na modyfikację folderów przez deweloperski porty
 function upload(&$model) {
     $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-    
+    $_SESSION['errors'] = [];
     if (!$user_id) {
         $user_id = isset($_SESSION['anon_user_id']) ? $_SESSION['anon_user_id'] : uniqid('anon_', true) . bin2hex(random_bytes(4));
         $_SESSION['anon_user_id'] = $user_id;
@@ -343,106 +233,74 @@ function createThumbnail($sourcePath, $destinationPath, $thumbnailWidth, $thumbn
 }
 
 
-function gallery_private(&$model, $page = 1, $itemsPerPage = 2) {
+function gallery_combined(&$model, $page = 1, $itemsPerPage = 4) {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $errors = [];
-    $uploadDirectory = '../../public/images/';
+    
+    // Sprawdzenie, czy użytkownik jest zalogowany
     $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : "guest";
     if ($user_id == "guest" || !$user_id) {
         $errors[] = "User not logged in.";
         $_SESSION['errors'] = $errors;
-        return REDIRECT_PREFIX . 'public';
     }
 
-    $userFolder = $uploadDirectory . $user_id . '/';
-
-    if (!is_dir($userFolder)) {
-        $errors[] = "No images found for the user.";
-        $model = [
-            'thumbnails' => [],
-            'userFolder' => $userFolder,
-            'currentPage' => $page,
-            'totalPages' => 0
-        ];
-        $_SESSION['errors'] = $errors;
-        return 'gallery_view';
+    // Pobranie prywatnych zdjęć z bazy danych
+    $userImagesWithMetadata = [];
+    try {
+        $userImages = get_user_images($user_id);  // Załóżmy, że funkcja ta zwraca zdjęcia powiązane z użytkownikiem
+        foreach ($userImages as $thumbnail) {
+            if ($thumbnail) {
+                $userImagesWithMetadata[] = [
+                    'thumbnail_path' => $thumbnail['thumbnail_path'],
+                    'watermark_path' => $thumbnail['watermark_path'],
+                    'image_name' => $thumbnail['image_name'],
+                    'author' => $thumbnail['author_name'],
+                    'isPublic' => $thumbnail['public'],
+                    'id' => $thumbnail['_id']
+                ];
+            }
+        }
+    } catch (Exception $e) {
+        $errors[] = "Error fetching private images: " . $e->getMessage();
     }
 
-    $thumbnails = array_filter(scandir($userFolder), function($file) use ($userFolder) {
-        return is_file($userFolder . $file) && strpos($file, 'thumbnail_') === 0;
+    // Pobranie publicznych zdjęć z bazy danych
+    $publicImagesWithMetadata = [];
+    try {
+        $publicImages = get_all_public_images();
+
+        // Przetwarzanie publicznych zdjęć
+        foreach ($publicImages as $image) {
+            $publicImagesWithMetadata[] = [
+                'thumbnail_path' => isset($image['thumbnail_path']) ? $image['thumbnail_path'] : $image['original_image'],
+                'watermark_path' => isset($image['watermark_path']) ? $image['watermark_path'] : $image['original_image'],
+                'image_name' => isset($image['image_name']) ? $image['image_name'] : basename($image),
+                'author' => isset($image['author_name']) ? $image['author_name'] : "Unknown",
+                'isPublic' => isset($image['public']) ? $image['public'] : true,
+                'id' => $image['_id']
+            ];
+        }
+    } catch (Exception $e) {
+        $errors[] = "Error during reading public images: " . $e->getMessage();
+    }
+
+    $allImages = array_merge($userImagesWithMetadata, $publicImagesWithMetadata);
+
+    // Usuwanie duplikatów zdjęć
+    $allImages = array_map("unserialize", array_unique(array_map("serialize", $allImages)));
+
+    // Sortowanie, aby prywatne zdjęcia były pierwsze
+    usort($allImages, function($a, $b) {
+        return $a['isPublic'] - $b['isPublic'];
     });
 
-    $thumbnailsWithMetadata = array_map(function ($thumbnail) use ($userFolder) {
-        $imageInfo = null;
-        try {
-            $imageInfo = get_image_info($userFolder . $thumbnail);
-        } catch (Exception $e) {
-            $errors[] = "Error creating watermark for $fileName: " . $e->getMessage();
-        }
-        return [
-            'thumbnail' => $thumbnail,
-            'image_name' => isset($imageInfo)? $imageInfo['image_name'] : basename($thumbnail), 
-            'author' => isset($imageInfo)? $imageInfo['author_name'] : "Unknown", 
-            'isPublic' => isset($imageInfo['public']) ? $imageInfo['public'] : true,
-            'id' => $imageInfo['_id']
-        ];
-    }, $thumbnails);
-
-    $totalItems = count($thumbnails);
-    $totalPages = ceil($totalItems / $itemsPerPage);
-
-    $currentPage = max(1, min($totalPages, $page));
-    $offset = ($currentPage - 1) * $itemsPerPage;
-    $paginatedThumbnails = array_slice($thumbnailsWithMetadata, $offset, $itemsPerPage);
-    
-    $model = [
-        'thumbnails' => $paginatedThumbnails,
-        'userFolder' => $userFolder,
-        'currentPage' => $currentPage,
-        'totalPages' => $totalPages
-    ];
-
-    if (!empty($errors)) {
-        $_SESSION['errors'] = $errors;
-        return 'gallery_view';
-        exit;
-    }
-    return 'gallery_view';
-}
-
-function gallery_public(&$model, $page = 1, $itemsPerPage = 4) {
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $errors = [];
-
-    $publicImages = get_all_public_images();
-    if (empty($publicImages)) {
-        $errors[] = "No public images found.";
-        $model = [
-            'thumbnails' => [],
-            'currentPage' => $page,
-            'totalPages' => 0
-        ];
-        $_SESSION['errors'] = $errors;
-        return 'gallery_public_view';
-    }
-
-    $thumbnailsWithMetadata = array_map(function ($image) {
-      return [
-            'thumbnail_path' => isset($image['thumbnail_path'])? $image['thumbnail_path'] : $image['original_image'],
-            'watermark_path' => isset($image['watermark_path'])? $image['watermark_path'] : $image['original_image'],
-            'image_name' => isset($image['image_name']) ? $image['image_name'] : "Unknown name",
-            'author' => isset($image['author_name']) ? $image['author_name'] : "Unknown", 
-            'isPublic' => isset($image['public']) ? $image['public'] : true,
-            'id' => $image['_id']
-        ];
-    }, $publicImages);
-
-    $totalItems = count($thumbnailsWithMetadata);
+    // Paginacja
+    $totalItems = count($allImages);
     $totalPages = ceil($totalItems / $itemsPerPage);
     $currentPage = max(1, min($totalPages, $page));
     $offset = ($currentPage - 1) * $itemsPerPage;
-    $paginatedThumbnails = array_slice($thumbnailsWithMetadata, $offset, $itemsPerPage);
-    
+    $paginatedThumbnails = array_slice($allImages, $offset, $itemsPerPage);
+
     $model = [
         'thumbnails' => $paginatedThumbnails,
         'currentPage' => $currentPage,
@@ -453,25 +311,10 @@ function gallery_public(&$model, $page = 1, $itemsPerPage = 4) {
         $_SESSION['errors'] = $errors;
         return 'gallery_public_view';
     }
+
     return 'gallery_public_view';
 }
 
-function gallery_selected(&$model) {
-    // zmienić!
-    
-    if (!isset($_SESSION['selected_images']) || empty($_SESSION['selected_images'])) {
-        $model = ['thumbnails' => []];
-        return 'selected_gallery_view';
-    }
-
-    $db = get_db();
-    $images = $db->images;
-    $selectedImages = $_SESSION['selected_images'];
-    $thumbnails = iterator_to_array($images->find(['_id' => ['$in' => $selectedImages]]));
-    
-    $model = ['thumbnails' => $thumbnails];
-    return 'selected_gallery_view';
-}
 
 
 function save_selected() {
@@ -480,7 +323,7 @@ function save_selected() {
         $images = [];
         $errors = [];
 
-        // Pobieramy informacje o nowych zdjęciach
+        // Pobieram informacje o nowych zdjęciach
         foreach ($selectedIds as $id) {
             try {
                 $image = get_image_by_id(new MongoDB\BSON\ObjectId($id));
@@ -494,21 +337,23 @@ function save_selected() {
             }
         }
 
-        // Jeśli sesja już zawiera wybrane zdjęcia, łączymy je z nowymi
+        // Jeśli sesja już zawiera wybrane zdjęcia, łącze je z nowymi
         if (isset($_SESSION['selected_images']) && is_array($_SESSION['selected_images'])) {
-            // Usuwamy duplikaty na podstawie `_id`
+            // Usuwanie duplikatów na podstawie `_id`
             $existingImages = $_SESSION['selected_images'];
             $images = array_merge($existingImages, $images);
             $images = array_unique($images, SORT_REGULAR); // Usuwanie duplikatów
         }
 
-        // Zapisujemy do sesji
+        // Zapisuje do sesji
         $_SESSION['selected_images'] = $images;
 
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
         }
-
+        return 'selected_gallery_view';
+    }
+    else if(isset($_SESSION['selected_images'])){
         return 'selected_gallery_view';
     }
 
@@ -539,9 +384,9 @@ function remove_selected() {
         }
         return 'selected_gallery_view';
     }
-
     return 'selected_gallery_view';
 }
+
 
 function search_image(){
     return 'search_image_view';
