@@ -7,6 +7,22 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+<nav>
+    <ul class="menu">
+        <li><a href="public">Gallery</a></li>
+        <li><a href="search_image">Search Image</a></li>
+        <li><a href="upload">Upload Image</a></li>
+        <li><a href="save_selected">Selected Images</a></li>
+        
+        
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <li><a href="logout">Logout</a></li>
+        <?php else: ?>
+            <li><a href="register">Register</a></li>
+            <li><a href="login">Login</a></li>
+        <?php endif; ?>
+    </ul>
+</nav>
     <div class="container">
         <h1>Wyszukiwarka zdjęć</h1>
         <input type="text" id="searchInput" placeholder="Wpisz tytuł zdjęcia..." onkeyup="searchImages()">
@@ -35,9 +51,9 @@
                             html += '</div>';
                         });
                         $('#searchResults').html(html);
-                    } else if (jsonResponse.length === 0) {
+                    } else if (jsonResponse.images.length === 0) {
                         $('#searchResults').html('<p>Brak wyników dla podanego tytułu.</p>');
-                    } else if (jsonResponse.errors) {
+                    } else if (jsonResponse.errors.length > 0) {
                         $('#searchResults').html('<p style="color: red;">' + jsonResponse.errors.join(', ') + '</p>');
                     } else {
                         $('#searchResults').html('<p>Nieoczekiwany format danych.</p>');
@@ -57,5 +73,35 @@
     }
 
     </script>
+<style>
+nav {
+    background-color: #333;
+    font-family: Arial, sans-serif;
+    margin-bottom:5px;
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.menu li {
+    position: relative;
+    margin: 0;
+}
+
+.menu li a {
+    color: white;
+    text-decoration: none;
+    padding: 14px 20px;
+    display: block;
+}
+
+.menu li a:hover {
+    background-color: #575757;
+}
+</style>
 </body>
 </html>

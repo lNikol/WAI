@@ -1,6 +1,6 @@
 <?php
 require_once 'business.php';
-require_once 'controller_utils.php';
+
 
 function register(&$model) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -56,15 +56,16 @@ function login(&$model) {
 
 function logout() {
     session_destroy();
+    if (isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), '', time() - 3600, '/');
+    }
     return REDIRECT_PREFIX . 'register';
 }
 
 
-// dodać wszędzie przycisk wylogowania, na każdej stronie
 // sprawdzić prawo na modyfikację folderów przez deweloperski porty
 function upload(&$model) {
     $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-    $_SESSION['errors'] = [];
     if (!$user_id) {
         $user_id = isset($_SESSION['anon_user_id']) ? $_SESSION['anon_user_id'] : uniqid('anon_', true) . bin2hex(random_bytes(4));
         $_SESSION['anon_user_id'] = $user_id;
@@ -214,7 +215,7 @@ function createThumbnail($sourcePath, $destinationPath, $thumbnailWidth, $thumbn
     $imageWidth = imagesx($image);
     $imageHeight = imagesy($image);
 
-    // Stwórz pusty obraz miniatury
+    // Tworzenie pustego obrazu miniatury
     $thumbnail = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
 
     // Skaluje obraz do rozmiaru miniatury
@@ -237,17 +238,15 @@ function gallery_combined(&$model, $page = 1, $itemsPerPage = 4) {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $errors = [];
     
-    // Sprawdzenie, czy użytkownik jest zalogowany
     $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : "guest";
     if ($user_id == "guest" || !$user_id) {
         $errors[] = "User not logged in.";
-        $_SESSION['errors'] = $errors;
     }
 
     // Pobranie prywatnych zdjęć z bazy danych
     $userImagesWithMetadata = [];
     try {
-        $userImages = get_user_images($user_id);  // Załóżmy, że funkcja ta zwraca zdjęcia powiązane z użytkownikiem
+        $userImages = get_user_images($user_id);
         foreach ($userImages as $thumbnail) {
             if ($thumbnail) {
                 $userImagesWithMetadata[] = [
@@ -316,7 +315,6 @@ function gallery_combined(&$model, $page = 1, $itemsPerPage = 4) {
 }
 
 
-
 function save_selected() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_images'])) {
         $selectedIds = $_POST['selected_images'];
@@ -360,6 +358,7 @@ function save_selected() {
     return 'gallery_public_view';
 }
 
+
 function remove_selected() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_images'])) {
         $removeIds = $_POST['remove_images']; // Lista ID zdjęć do usunięcia
@@ -373,7 +372,7 @@ function remove_selected() {
             return 'selected_gallery_view';
         }
 
-        // Filtrujemy sesję, pozostawiając tylko te zdjęcia, których ID nie są w $removeIds
+        // Filtruję sesję, pozostawiając tylko te zdjęcia, których ID nie są w $removeIds
         $_SESSION['selected_images'] = array_filter($_SESSION['selected_images'], function ($image) use ($removeIds) {
             return !in_array($image['_id'], $removeIds);
         });
@@ -413,6 +412,7 @@ function search_images_by_title($title) {
 
     return $response;
 }
+
 
 if (isset($_GET['query'])) {
     try {
