@@ -2,17 +2,15 @@
 
 const REDIRECT_PREFIX = 'redirect:';
 
-function dispatch($routing, $action_url, $userController, $imageController)
-{
+function dispatch($routing, $action_url, $authController, $imageController, $combinedGalleryController, $privateGalleryController) {
     $controller_name = $routing[$action_url];
 
     $model = [];
-    $view_name = $controller_name($userController, $imageController, $model);
+    $view_name = $controller_name($authController, $imageController, $combinedGalleryController, $privateGalleryController, $model);
     build_response($view_name, $model);
 }
 
-function build_response($view, $model)
-{
+function build_response($view, $model) {
     if (strpos($view, REDIRECT_PREFIX) === 0) {
         $url = substr($view, strlen(REDIRECT_PREFIX));
         header("Location: " . $url);
@@ -23,11 +21,8 @@ function build_response($view, $model)
     }
 }
 
-function render($view_name, $model)
-{
+function render($view_name, $model) {
     global $routing;
-    echo $view_name;
     extract($model);
     include 'views/' . $view_name . '.php';
 }
-

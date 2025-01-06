@@ -8,22 +8,20 @@ class ImageService {
         $this->db = $db;
         $this->images = $this->db->images;
     }
-
-    public function saveImage($user_id, $user_folder, $title, $watermark_path, $thumbnail_path, $public, $author) {
+    public function saveImage(Image $image) {
         $this->images->insertOne([
-            'author_id' => $user_id,
-            'author_name' => $author,
-            'image_name' => $title,
-            'author_folder' => $user_folder,
-            'public' => $public,
-            'original_image' => $user_folder . $title,
-            'thumbnail_path' => $thumbnail_path,
-            'watermark_path' => $watermark_path,
+            'author_id' => $image->getUserId(),
+            'author_name' => $image->getAuthor(),
+            'image_name' => $image->getTitle(),
+            'author_folder' => $image->getUserFolder(),
+            'public' => $image->isPublic(),
+            'original_image' => $image->getUserFolder() . $image->getTitle(),
+            'thumbnail_path' => $image->getThumbnailPath(),
+            'watermark_path' => $image->getWatermarkPath(),
         ]);
 
         return false;
     }
-
     public function getUserImages($user_id) {
         return $this->images->find(['author_id' => $user_id])->toArray();
     }

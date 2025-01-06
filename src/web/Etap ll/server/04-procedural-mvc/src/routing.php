@@ -7,50 +7,50 @@ $routing = [
     '/logout' => 'logout',
     '/upload' => 'upload',
     '/public' => 'gallery_combined',
+    '/gallery' => 'gallery_private',
     '/save_selected' => 'save_selected',
     '/remove_selected' => 'remove_selected',
     '/search_image' => 'search_image',
-    '/search_images_by_title' => 'search_images_by_title',
-    '/gallery' => 'gallery_private'
+    '/search_images_by_title' => 'search_images_by_title'
 ];
 
-function register($userController, $imageController, &$model) {
-    return $userController->register($model);
+function register($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
+    return $authController->register($model);
 }
 
-function login($userController, $imageController, &$model) {
-    return $userController->login($model);
+function login($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
+    return $authController->login($model);
 }
 
-function logout($userController, $imageController, &$model) {
-    return $userController->logout();
+function logout($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
+    return $authController->logout();
 }
 
-function upload($userController, $imageController, &$model) {
+function upload($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
     return $imageController->upload($model);
 }
 
-function gallery_private($userController, $imageController, &$model) {
-    return $imageController->gallery_private($model);
+function gallery_private($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
+    return $privateGalleryController->gallery_private($model);
 }
 
-function gallery_combined($userController, $imageController, &$model) {
-    return $imageController->gallery_combined($model);
+function gallery_combined($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
+    return $combinedGalleryController->gallery_combined($model);
 }
 
-function save_selected($userController, $imageController, &$model) {
+function save_selected($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
     return $imageController->save_selected();
 }
 
-function remove_selected($userController, $imageController, &$model) {
+function remove_selected($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
     return $imageController->remove_selected();
 }
 
-function search_image($userController, $imageController, &$model) {
+function search_image($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
     return $imageController->search_image();
 }
 
-function search_images_by_title($userController, $imageController, &$model) {
+function search_images_by_title($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
     $query = $_GET['query'];
     $results = $imageController->search_images_by_title($query);
     echo json_encode($results);

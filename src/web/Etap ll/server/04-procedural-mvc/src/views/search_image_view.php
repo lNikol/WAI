@@ -9,7 +9,8 @@
 <body>
 <nav>
     <ul class="menu">
-        <li><a href="public">Gallery</a></li>
+        <li><a href="public">Public Gallery</a></li>
+        <li><a href="gallery">Private Gallery</a></li>
         <li><a href="search_image">Search Image</a></li>
         <li><a href="upload">Upload Image</a></li>
         <li><a href="save_selected">Selected Images</a></li>
@@ -46,8 +47,10 @@ function searchImages() {
                     let html = '';
                     jsonResponse.images.forEach(function(image) {
                         html += '<div class="thumbnail">';
-                        html += '<img src="' + image.thumbnail_path + '" alt="' + image.image_name + '">';
-                        html += '<p>' + image.image_name + '</p>';
+                        html += '<a href="' + image.watermark_path + '" alt="' + image.image_name + '" target="_blank">';
+                        html += '<img src="' + image.thumbnail_path + '" alt="' + image.image_name + '"> </a>';
+                        html += '<p> <b>Image name:</b> ' + image.image_name + '</p>';
+                        html += '<p> <b>Author: </b>' + image.author_name + '</p>';
                         html += '</div>';
                     });
                     $('#searchResults').html(html);
@@ -74,6 +77,9 @@ function searchImages() {
 </script>
 
 <style>
+.thumbnail{
+    margin-top:20px;
+}
 nav {
     background-color: #333;
     font-family: Arial, sans-serif;

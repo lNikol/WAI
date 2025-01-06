@@ -17,7 +17,8 @@ if (isset($_SESSION['errors'])) {
 
 <nav>
     <ul class="menu">
-        <li><a href="public">Gallery</a></li>
+        <li><a href="public">Public Gallery</a></li>
+        <li><a href="gallery">Private Gallery</a></li>
         <li><a href="search_image">Search Image</a></li>
         <li><a href="upload">Upload Image</a></li>
         <li><a href="save_selected">Selected Images</a></li>

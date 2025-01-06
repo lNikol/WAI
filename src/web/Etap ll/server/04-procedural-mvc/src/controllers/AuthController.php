@@ -1,10 +1,12 @@
 <?php
 
-class UserController {
-    private $userService;
+require_once '../models/User.php';
+
+class AuthController {
+    private $authService;
 
     public function __construct($db) {
-        $this->userService = new UserService($db);
+        $this->authService = new AuthService($db);
     }
 
     public function register(&$model) {
@@ -24,7 +26,8 @@ class UserController {
                 return 'register_view';
             }
 
-            $result = $this->userService->saveUser($name, $email, $password);
+            $user = new User($name, $email, $password);
+            $result = $this->authService->register($user);
             if ($result === 'success') {
                 return REDIRECT_PREFIX . 'login';
             } else {
@@ -41,13 +44,13 @@ class UserController {
             $email = $_POST['email'];
             $password = $_POST['password'];
 
-            $user = $this->userService->authenticateUser($email, $password);
+            $user = $this->authService->login($email, $password);
             if ($user) {
                 if (session_status() == PHP_SESSION_NONE) {
                     session_start();
                 }
-                $_SESSION['user_id'] = (string) $user['_id'];
-                $_SESSION['user_name'] = $user['name'];
+                $_SESSION['user_id'] = $this->authService->getUserId($user);
+                $_SESSION['user_name'] = $user->getName();
                 return REDIRECT_PREFIX . 'upload';
             } else {
                 $model['error'] = 'Invalid credentials';
