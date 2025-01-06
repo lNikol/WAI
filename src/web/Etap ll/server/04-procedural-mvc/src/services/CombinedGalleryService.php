@@ -74,11 +74,13 @@ class CombinedGalleryService {
         $model = [
             'thumbnails' => $paginatedThumbnails,
             'currentPage' => $currentPage,
-            'totalPages' => $totalPages
+            'totalPages' => $totalPages,
+            'user_id' => $user_id
         ];
 
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
+            $model['errors'] = $errors;
             return 'gallery_public_view';
         }
 

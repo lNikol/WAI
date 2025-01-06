@@ -1,6 +1,6 @@
 <?php
+include_once '../models/User.php';
 
-require_once '../models/User.php';
 
 class AuthController {
     private $authService;
@@ -11,10 +11,14 @@ class AuthController {
 
     public function register(&$model) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            echo $_SESSION['user_id'] . '<-- userid';
             $name = $_POST['name'];
             $email = $_POST['email'];
             $password = $_POST['password'];
             $confirm_password = $_POST['confirm_password'];
+                    if(isset($_SESSION['user_id'])){
+            $model['user_id'] = $_SESSION['user_id'];
+        }
 
             if ($password !== $confirm_password) {
                 $model['error'] = 'Passwords do not match';
@@ -29,6 +33,7 @@ class AuthController {
             $user = new User($name, $email, $password);
             $result = $this->authService->register($user);
             if ($result === 'success') {
+                $model['user_id'] = $this->authService->getUserId($user);
                 return REDIRECT_PREFIX . 'login';
             } else {
                 $model['error'] = $result;
@@ -36,6 +41,11 @@ class AuthController {
             }
         }
 
+        if(isset($_SESSION['user_id'])){
+                    if(isset($_SESSION['user_id'])){
+            $model['user_id'] = $_SESSION['user_id'];
+        }
+        }
         return 'register_view';
     }
 
@@ -46,25 +56,41 @@ class AuthController {
 
             $user = $this->authService->login($email, $password);
             if ($user) {
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
+                if (session_status() == PHP_SESSION_NONE || !isset($_COOKIE[session_name()]) || empty($_COOKIE[session_name()])) { 
+                    $params = session_get_cookie_params();
+                    setcookie(session_name(), '', time() - 42000,
+                    $params["path"], $params["domain"],
+                    $params["secure"], $params["httponly"]
+                    );
+                    session_start(); 
                 }
-                $_SESSION['user_id'] = $this->authService->getUserId($user);
+                $us_id = $this->authService->getUserId($user);
+                $_SESSION['user_id'] = $us_id;
+                $model['user_id'] = $us_id;
                 $_SESSION['user_name'] = $user->getName();
                 return REDIRECT_PREFIX . 'upload';
             } else {
                 $model['error'] = 'Invalid credentials';
             }
         }
-
+                if(isset($_SESSION['user_id'])){
+            $model['user_id'] = $_SESSION['user_id'];
+        }
         return 'login_view';
     }
 
     public function logout() {
-        session_destroy();
         if (isset($_COOKIE[session_name()])) {
-            setcookie(session_name(), '', time() - 3600, '/');
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+            );
         }
         return REDIRECT_PREFIX . 'register';
+    }
+
+    public function getUserName($user_id){
+        return $this->$authService->getUserName($user_id);
     }
 }

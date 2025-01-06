@@ -7,11 +7,11 @@
 </head>
 <body>
 <?php
-if (isset($_SESSION['errors'])) {
-    foreach ($_SESSION['errors'] as $error) {
+if (isset($model['errors'])) {
+    foreach ($model['errors'] as $error) {
         echo "<p style='color: red;'>$error</p>";
     }
-    unset($_SESSION['errors']);
+    unset($model['errors']);
 }
 ?>
 
@@ -23,7 +23,7 @@ if (isset($_SESSION['errors'])) {
         <li><a href="upload">Upload Image</a></li>
         <li><a href="save_selected">Selected Images</a></li>
         
-        <?php if (isset($_SESSION['user_id'])): ?>
+        <?php if (isset($model['user_id'])): ?>
             <li><a href="logout">Logout</a></li>
         <?php else: ?>
             <li><a href="register">Register</a></li>
@@ -54,7 +54,7 @@ if (isset($_SESSION['errors'])) {
                                     </strong> <?= htmlspecialchars($thumbnail['_id']) ?></p>
                                     <p><strong>Autor:</strong> <?= htmlspecialchars($thumbnail['author_name']) ?></p>
                                     <p><strong>Status:</strong> <?= $thumbnail['public'] ? 'Publiczne' : 'Prywatne' ?></p>
-                                    <p><strong>Tytuł:</strong> <?= htmlspecialchars($thumbnail['image_name']) ?></p>
+                                    <p><strong>Title:</strong> <?= htmlspecialchars($thumbnail['image_name']) ?></p>
                                 </div>
                                 
                             </label>

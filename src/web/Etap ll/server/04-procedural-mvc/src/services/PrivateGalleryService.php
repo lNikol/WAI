@@ -9,7 +9,7 @@ class PrivateGalleryService {
         $this->imageService = new ImageService($db);
     }
 
-    public function gallery_private(&$model, $page = 1, $itemsPerPage = 2) {
+    public function gallery_private(&$model, $page = 1, $itemsPerPage = 6) {
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $errors = [];
         
@@ -48,11 +48,13 @@ class PrivateGalleryService {
         $model = [
             'thumbnails' => $paginatedThumbnails,
             'currentPage' => $currentPage,
-            'totalPages' => $totalPages
+            'totalPages' => $totalPages,
+            'user_id' => $user_id,
         ];
 
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
+            $model['errors'] = $errors;
             return 'gallery_view';
         }
         return 'gallery_view';

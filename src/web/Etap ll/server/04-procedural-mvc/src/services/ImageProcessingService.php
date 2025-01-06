@@ -15,7 +15,7 @@ class ImageProcessingService {
         $imageHeight = imagesy($image);
 
         $fontSize = 20;
-        $fontFile = '../../public/fonts/centurygothic_bold.ttf';
+        $fontFile = '../public/fonts/centurygothic_bold.ttf';
         $textColor = imagecolorallocatealpha($image, 0, 0, 0, 50);
 
         $textBoundingBox = imagettfbbox($fontSize, 0, $fontFile, $watermarkText);

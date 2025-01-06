@@ -16,11 +16,13 @@ class ImageController {
         if (!$user_id) {
             $user_id = isset($_SESSION['anon_user_id']) ? $_SESSION['anon_user_id'] : uniqid('anon_', true) . bin2hex(random_bytes(4));
             $_SESSION['anon_user_id'] = $user_id;
+            $model['anon_user_id'] = $user_id;
         }
-
+        $model['user_id'] = $user_id;
+        $model['user_name'] = get_user_name($user_id);
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['images'])) {
             $files = $_FILES['images'];
-            $uploadDirectory = '../../public/images/';
+            $uploadDirectory = '../public/images/';
             $maxFileSize = 1 * 1024 * 1024;
             $allowedMimeTypes = ['image/jpeg', 'image/png'];
             $errors = [];
@@ -100,6 +102,7 @@ class ImageController {
 
             if (!empty($errors)) {
                 $_SESSION['errors'] = $errors;
+                $model['errors'] = $errors;
                 return 'upload_view';
             }
             return REDIRECT_PREFIX . 'public';
@@ -108,7 +111,10 @@ class ImageController {
         return 'upload_view';
     }
 
-    public function search_image() {
+    public function search_image(&$model) {
+                if(isset($_SESSION['user_id'])){
+            $model['user_id'] = $_SESSION['user_id'];
+        }
         return 'search_image_view';
     }
 
@@ -127,7 +133,7 @@ class ImageController {
         }
     }
 
-    public function save_selected() {
+    public function save_selected(&$model) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_images'])) {
             $selectedIds = $_POST['selected_images'];
             $images = [];
@@ -153,12 +159,19 @@ class ImageController {
             }
 
             $_SESSION['selected_images'] = $images;
-
+            $model = $images;
             if (!empty($errors)) {
                 $_SESSION['errors'] = $errors;
+                $model['errors'] = $errors;
             }
+                    if(isset($_SESSION['user_id'])){
+            $model['user_id'] = $_SESSION['user_id'];
+        }
             return 'selected_gallery_view';
         } else if (isset($_SESSION['selected_images'])) {
+                    if(isset($_SESSION['user_id'])){
+            $model['user_id'] = $_SESSION['user_id'];
+        }
             return 'selected_gallery_view';
         }
 

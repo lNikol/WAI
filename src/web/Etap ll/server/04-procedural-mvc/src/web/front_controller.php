@@ -24,11 +24,19 @@ function get_db() {
     return $mongo->wai;
 }
 
+
 $db = get_db();
+
+function get_user_name($user_id){
+    $dbb = get_db();
+    return $dbb->users->findOne(['_id' => $user_id])['name'];
+}
+
 $authController = new AuthController($db);
 $imageController = new ImageController($db);
 $combinedGalleryController = new CombinedGalleryController($db);
 $privateGalleryController = new PrivateGalleryController($db);
+
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();

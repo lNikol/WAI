@@ -107,7 +107,7 @@ nav {
         <li><a href="upload">Upload Image</a></li>
         <li><a href="save_selected">Selected Images</a></li>
         
-        <?php if (isset($_SESSION['user_id'])): ?>
+        <?php if (isset($model['user_id'])): ?>
             <li><a href="logout">Logout</a></li>
         <?php else: ?>
             <li><a href="register">Register</a></li>
@@ -116,9 +116,9 @@ nav {
     </ul>
 </nav>
 
-<?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
+<?php if (isset($model['errors']) && !empty($model['errors'])): ?>
     <div class="error-messages">
-        <?php foreach ($_SESSION['errors'] as $error): ?>
+        <?php foreach ($model['errors'] as $error): ?>
             <p style='color: red;'><?= htmlspecialchars($error) ?></p>
         <?php endforeach; ?>
     </div>
@@ -141,12 +141,12 @@ nav {
                                     <input type="checkbox" id="image-<?= htmlspecialchars($thumbnail['id']) ?>" 
                                         name="selected_images[]" 
                                         value="<?= htmlspecialchars($thumbnail['id']) ?>" 
-                                        <?= isset($_SESSION['selected_images']) && in_array($thumbnail['id'], array_column($_SESSION['selected_images'], '_id')) ? 'checked' : '' ?>>
+                                        <?= isset($model['selected_images']) && in_array($thumbnail['id'], array_column($model['selected_images'], '_id')) ? 'checked' : '' ?>>
                                     </strong><?= htmlspecialchars($thumbnail['id']) ?></p>
                                         
                                     <p><strong>Autor:</strong> <?= htmlspecialchars($thumbnail['author']) ?></p>
                                     <p><strong>Status:</strong> <?= $thumbnail['public'] ? 'Publiczne' : 'Prywatne' ?></p>
-                                    <p><strong>Tytuł:</strong> <?= htmlspecialchars($thumbnail['image_name']) ?></p>
+                                    <p><strong>Title:</strong> <?= htmlspecialchars($thumbnail['image_name']) ?></p>
                                 </div>
                             </label>
                         </div>

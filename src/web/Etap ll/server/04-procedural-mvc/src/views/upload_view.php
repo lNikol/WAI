@@ -8,11 +8,11 @@
 <body>
 <h1>Upload Images</h1>
 <?php
-if (isset($_SESSION['errors'])) {
-    foreach ($_SESSION['errors'] as $error) {
+if (isset($model['errors'])) {
+    foreach ($model['errors'] as $error) {
         echo "<p style='color: red;'>$error</p>";
     }
-    unset($_SESSION['errors']);
+    unset($model['errors']);
 }
 ?>
 <nav>
@@ -23,7 +23,7 @@ if (isset($_SESSION['errors'])) {
         <li><a href="upload">Upload Image</a></li>
         <li><a href="save_selected">Selected Images</a></li>
         
-        <?php if (isset($_SESSION['user_id'])): ?>
+        <?php if (isset($model['user_id']) && strpos($model['user_id'], 'anon') === false): ?>
             <li><a href="logout">Logout</a></li>
         <?php else: ?>
             <li><a href="register">Register</a></li>
@@ -41,7 +41,7 @@ if (isset($_SESSION['errors'])) {
 
 <script>
     function updateFormFields() {
-    let userLogin = '<?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : "guest"; ?>';
+    let userLogin = '<?php echo isset($model['user_name']) ? $model['user_name'] : "guest"; ?>';
 
     let files = document.getElementById('file-input').files;
     let container = document.getElementById('input-fields-container');
@@ -75,7 +75,7 @@ if (isset($_SESSION['errors'])) {
         fileParagraph.appendChild(watermarkInput);
         fileParagraph.appendChild(authorInput);
         
-        <?php if (isset($_SESSION['user_id']) && strpos($_SESSION['user_id'], 'anon') === false): ?>
+        <?php if (isset($model['user_id']) && strpos($model['user_id'], 'anon') === false): ?>
             let publicRadio = document.createElement('label');
             publicRadio.innerHTML = '<input type="radio" name="public[' + i + ']" value="1" checked> Publiczny';
             let privateRadio = document.createElement('label');

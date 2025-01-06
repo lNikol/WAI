@@ -44,7 +44,7 @@
         <li><a href="upload">Upload Image</a></li>
         <li><a href="save_selected">Selected Images</a></li>
         
-        <?php if (isset($_SESSION['user_id'])): ?>
+        <?php if (isset($model['user_id'])): ?>
             <li><a href="logout">Logout</a></li>
         <?php else: ?>
             <li><a href="register">Register</a></li>
@@ -53,7 +53,7 @@
     </ul>
 </nav>
 <?php
-if (isset($_SESSION['user_id'])) {
+if (isset($model['user_id'])) {
     echo "<p>You are already logged in. <a href='logout'>Logout</a></p>";
     exit;
 }

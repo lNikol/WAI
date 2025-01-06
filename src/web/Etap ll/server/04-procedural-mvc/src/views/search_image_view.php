@@ -15,7 +15,7 @@
         <li><a href="upload">Upload Image</a></li>
         <li><a href="save_selected">Selected Images</a></li>
         
-        <?php if (isset($_SESSION['user_id'])): ?>
+        <?php if (isset($model['user_id'])): ?>
             <li><a href="logout">Logout</a></li>
         <?php else: ?>
             <li><a href="register">Register</a></li>
@@ -49,7 +49,7 @@ function searchImages() {
                         html += '<div class="thumbnail">';
                         html += '<a href="' + image.watermark_path + '" alt="' + image.image_name + '" target="_blank">';
                         html += '<img src="' + image.thumbnail_path + '" alt="' + image.image_name + '"> </a>';
-                        html += '<p> <b>Image name:</b> ' + image.image_name + '</p>';
+                        html += '<p> <b>Title:</b> ' + image.image_name + '</p>';
                         html += '<p> <b>Author: </b>' + image.author_name + '</p>';
                         html += '</div>';
                     });

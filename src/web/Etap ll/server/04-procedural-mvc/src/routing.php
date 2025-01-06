@@ -39,7 +39,7 @@ function gallery_combined($authController, $imageController, $combinedGalleryCon
 }
 
 function save_selected($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
-    return $imageController->save_selected();
+    return $imageController->save_selected($model);
 }
 
 function remove_selected($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
@@ -47,10 +47,16 @@ function remove_selected($authController, $imageController, $combinedGalleryCont
 }
 
 function search_image($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
-    return $imageController->search_image();
+    return $imageController->search_image($model);
 }
 
 function search_images_by_title($authController, $imageController, $combinedGalleryController, $privateGalleryController, &$model) {
+    if (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') 
+        { 
+            http_response_code(403);
+            die('Forbidden'); 
+        } 
+        
     $query = $_GET['query'];
     $results = $imageController->search_images_by_title($query);
     echo json_encode($results);

@@ -1,6 +1,5 @@
 <?php
 
-require_once '../models/User.php';
 
 class AuthService {
     private $db;
@@ -39,4 +38,8 @@ class AuthService {
     public function getUserId(User $user) { 
         return $this->users->findOne(['email' => $user->getEmail()])['_id'];
     }
+
+
+
+
 }
