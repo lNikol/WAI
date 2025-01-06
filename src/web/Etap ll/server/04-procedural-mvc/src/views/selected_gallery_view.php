@@ -37,7 +37,7 @@ if (isset($_SESSION['errors'])) {
                     <?php endforeach; ?>
                 </div>
             </div>
-            <button type="submit">Usuń zaznaczone</button>
+            <button type="submit">Usuń zaznaczone z zapamiętanych</button>
         </form>
     <?php else: ?>
         <p>Nie wybrano żadnych zdjęć.</p>

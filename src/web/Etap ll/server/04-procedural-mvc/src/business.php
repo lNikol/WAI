@@ -128,3 +128,16 @@ function get_all_public_images(){
     $images = $db->images;
     return (iterator_to_array($images->find(['public' => true])));
 }
+
+function get_images_by_title($title){
+    $db = get_db();
+    $images = $db->images;
+
+    if (!$db || !$images) {
+        throw new Exception('Baza danych lub kolekcja obrazów nie jest dostępna.');
+    }
+    
+    return $images->find([
+        'image_name' => new MongoDB\BSON\Regex($title, 'i') // 'i' oznacza ignorowanie wielkości liter
+    ]);
+}

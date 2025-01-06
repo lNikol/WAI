@@ -14,22 +14,48 @@
     </div>
 
     <script>
-        function searchImages() {
-            var query = $('#searchInput').val(); // Pobieramy tekst z pola wyszukiwania
+    function searchImages() {
+        let query = $('#searchInput').val();
 
-            // Wysyłamy zapytanie AJAX
-            $.ajax({
-                url: 'get_images_by_title', // Ścieżka do skryptu obsługującego zapytanie
-                type: 'GET',
-                data: { query: query }, // Przesyłamy zapytanie
-                success: function(response) {
-                    $('#searchResults').html(response); // Wyświetlamy odpowiedź (miniatury)
-                },
-                error: function() {
-                    $('#searchResults').html('<p>Wystąpił błąd podczas wyszukiwania.</p>');
+        $.ajax({
+            url: 'search_images_by_title',
+            type: 'GET',
+            data: { query: query }, // Przesyłam zapytanie
+            success: function(response) {
+                try {
+                    let jsonResponse = JSON.parse(response);
+
+                    if (jsonResponse.images.length > 0) {
+                        // Tworze miniaturki
+                        let html = '';
+                        jsonResponse.images.forEach(function(image) {
+                            html += '<div class="thumbnail">';
+                            html += '<img src="' + image.thumbnail_path + '" alt="' + image.image_name + '">';
+                            html += '<p>' + image.image_name + '</p>';
+                            html += '</div>';
+                        });
+                        $('#searchResults').html(html);
+                    } else if (jsonResponse.length === 0) {
+                        $('#searchResults').html('<p>Brak wyników dla podanego tytułu.</p>');
+                    } else if (jsonResponse.errors) {
+                        $('#searchResults').html('<p style="color: red;">' + jsonResponse.errors.join(', ') + '</p>');
+                    } else {
+                        $('#searchResults').html('<p>Nieoczekiwany format danych.</p>');
+                    }
+                } catch (error) {
+                    // Obsługa błędów parsowania JSON
+                    console.error("Błąd parsowania JSON:", error.message);
+                    $('#searchResults').html('<p style="color: red;">Błąd podczas przetwarzania danych: ' + error.message + '</p>');
                 }
-            });
-        }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // Loguje odpowiedź w przypadku błędu
+                let errorMessage = 'Wystąpił błąd: ' + textStatus + ' - ' + errorThrown;
+                $('#searchResults').html('<p style="color: red;">' + errorMessage + '</p>');
+            }
+        });
+    }
+
     </script>
 </body>
 </html>

@@ -263,7 +263,7 @@ function upload(&$model) {
             return 'upload_view';
             exit;
         }
-        return REDIRECT_PREFIX . 'success';
+        return REDIRECT_PREFIX . 'public';
     }
     
     // Jeżeli formularz nie został wysłany, wyświetlam formularz
@@ -532,9 +532,6 @@ function remove_selected() {
         $_SESSION['selected_images'] = array_filter($_SESSION['selected_images'], function ($image) use ($removeIds) {
             return !in_array($image['_id'], $removeIds);
         });
-
-        echo count($removeIds) . " <-- count of images to remove  ";
-        echo count($_SESSION['selected_images']) . " <-- session count after removal ";
         
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
@@ -550,31 +547,35 @@ function search_image(){
     return 'search_image_view';
 }
 
-function get_images_by_title($title) {
-    $db = get_db(); // Funkcja do połączenia z bazą danych
-    $images = $db->images;
-    
-    // Wyszukujemy zdjęcia, których tytuł zawiera frazę
-    $cursor = $images->find([
-        'image_name' => new MongoDB\BSON\Regex($title, 'i') // 'i' oznacza ignorowanie wielkości liter
-    ]);
-    
-    return iterator_to_array($cursor);
+
+function search_images_by_title($title) {
+    $response = ['images' => [], 'errors' => []];
+    try {
+        if (!is_string($title)) {
+            $response['errors'][] = 'Nieprawidłowy format tytułu';
+            return $response;
+        }
+        $cursor = iterator_to_array(get_images_by_title($title));
+        foreach ($cursor as $image) {
+            $response['images'][] = [
+                'thumbnail_path' => $image['thumbnail_path'] ?? 'brak-miniatury.jpg',
+                'image_name' => $image['image_name'] ?? 'Nieznany tytuł',
+            ];
+        }
+    } catch (Exception $e) {
+        $response['errors'][] = 'Błąd podczas pobierania obrazów: ' . $e->getMessage();
+    }
+
+    return $response;
 }
 
 if (isset($_GET['query'])) {
-    $query = $_GET['query'];
-    $images = get_images_by_title($query);
-
-    // Generujemy HTML z miniaturkami zdjęć
-    if (!empty($images)) {
-        foreach ($images as $image) {
-            echo '<div class="thumbnail">';
-            echo '<img src="' . htmlspecialchars($image['thumbnail_path']) . '" alt="' . htmlspecialchars($image['image_name']) . '">';
-            echo '<p>' . htmlspecialchars($image['image_name']) . '</p>';
-            echo '</div>';
-        }
-    } else {
-        echo '<p>Brak wyników dla podanego tytułu.</p>';
+    try {
+        $query = $_GET['query'];
+        $results = search_images_by_title($query);
+        echo json_encode($results);
+    } catch (Exception $e) {
+        echo json_encode(['errors' => [$e->getMessage()]]);
     }
+    exit;
 }
