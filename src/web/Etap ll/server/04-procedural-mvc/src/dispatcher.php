@@ -15,7 +15,6 @@ function build_response($view, $model) {
         $url = substr($view, strlen(REDIRECT_PREFIX));
         header("Location: " . $url);
         exit;
-
     } else {
         render($view, $model);
     }

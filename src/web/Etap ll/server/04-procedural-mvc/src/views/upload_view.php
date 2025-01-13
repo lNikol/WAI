@@ -4,6 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Images</title>
+    <style>
+.input-group {
+    margin-bottom: 10px;
+}
+
+input[readonly] {
+    background-color: #f0f0f0;
+    color: #888;
+}
+
+input[type="text"] {
+    padding: 5px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 300px;
+}
+
+p {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+nav {
+    background-color: #333;
+    font-family: Arial, sans-serif;
+    margin-bottom: 5px;
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.menu li {
+    position: relative;
+    margin: 0;
+}
+
+.menu li a {
+    color: white;
+    text-decoration: none;
+    padding: 14px 20px;
+    display: block;
+}
+
+.menu li a:hover {
+    background-color: #575757;
+}
+</style>
 </head>
 <body>
 <h1>Upload Images</h1>
@@ -88,71 +153,5 @@ if (isset($model['errors'])) {
     }
 }
 </script>
-
-<style>
-.input-group {
-    margin-bottom: 10px;
-}
-
-input[readonly] {
-    background-color: #f0f0f0;
-    color: #888;
-}
-
-input[type="text"] {
-    padding: 5px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 300px;
-}
-
-p {
-    font-size: 14px;
-    margin-bottom: 10px;
-}
-
-button {
-    padding: 10px 15px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-nav {
-    background-color: #333;
-    font-family: Arial, sans-serif;
-    margin-bottom: 5px;
-}
-
-.menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-}
-
-.menu li {
-    position: relative;
-    margin: 0;
-}
-
-.menu li a {
-    color: white;
-    text-decoration: none;
-    padding: 14px 20px;
-    display: block;
-}
-
-.menu li a:hover {
-    background-color: #575757;
-}
-</style>
 </body>
 </html>

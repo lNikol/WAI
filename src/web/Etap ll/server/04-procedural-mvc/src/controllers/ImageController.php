@@ -112,7 +112,7 @@ class ImageController {
     }
 
     public function search_image(&$model) {
-                if(isset($_SESSION['user_id'])){
+        if(isset($_SESSION['user_id'])){
             $model['user_id'] = $_SESSION['user_id'];
         }
         return 'search_image_view';
@@ -164,14 +164,14 @@ class ImageController {
                 $_SESSION['errors'] = $errors;
                 $model['errors'] = $errors;
             }
-                    if(isset($_SESSION['user_id'])){
-            $model['user_id'] = $_SESSION['user_id'];
-        }
+            if(isset($_SESSION['user_id'])){
+                $model['user_id'] = $_SESSION['user_id'];
+            }
             return 'selected_gallery_view';
         } else if (isset($_SESSION['selected_images'])) {
-                    if(isset($_SESSION['user_id'])){
-            $model['user_id'] = $_SESSION['user_id'];
-        }
+            if(isset($_SESSION['user_id'])){
+                $model['user_id'] = $_SESSION['user_id'];
+            }
             return 'selected_gallery_view';
         }
 

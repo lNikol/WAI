@@ -38,8 +38,4 @@ class AuthService {
     public function getUserId(User $user) { 
         return $this->users->findOne(['email' => $user->getEmail()])['_id'];
     }
-
-
-
-
 }

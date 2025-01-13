@@ -11,14 +11,10 @@ class AuthController {
 
     public function register(&$model) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            echo $_SESSION['user_id'] . '<-- userid';
             $name = $_POST['name'];
             $email = $_POST['email'];
             $password = $_POST['password'];
             $confirm_password = $_POST['confirm_password'];
-                    if(isset($_SESSION['user_id'])){
-            $model['user_id'] = $_SESSION['user_id'];
-        }
 
             if ($password !== $confirm_password) {
                 $model['error'] = 'Passwords do not match';
@@ -42,9 +38,7 @@ class AuthController {
         }
 
         if(isset($_SESSION['user_id'])){
-                    if(isset($_SESSION['user_id'])){
             $model['user_id'] = $_SESSION['user_id'];
-        }
         }
         return 'register_view';
     }

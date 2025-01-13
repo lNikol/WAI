@@ -3,62 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prywatna Galeria Zdjęć</title>
-</head>
-<body>
-<?php
-if (isset($model['errors'])) {
-    foreach ($model['errors'] as $error) {
-        echo "<p style='color: red;'>$error</p>";
-    }
-    unset($model['errors']);
-}
-?>
-
-<nav>
-    <ul class="menu">
-        <li><a href="public">Public Gallery</a></li>
-        <li><a href="gallery">Private Gallery</a></li>
-        <li><a href="search_image">Search Image</a></li>
-        <li><a href="upload">Upload Image</a></li>
-        <li><a href="save_selected">Selected Images</a></li>
-        
-        <?php if (isset($model['user_id'])): ?>
-            <li><a href="logout">Logout</a></li>
-        <?php else: ?>
-            <li><a href="register">Register</a></li>
-            <li><a href="login">Login</a></li>
-        <?php endif; ?>
-    </ul>
-</nav>
-
-<div class="gallery">
-    <?php if (!empty($thumbnails)): ?>
-        <?php foreach ($thumbnails as $thumbnailData): ?>
-            <div class="gallery-item">
-                <a href="<?= htmlspecialchars($thumbnailData['watermark']); ?>" target="_blank">
-                    <img src="<?= htmlspecialchars($thumbnailData['thumbnail']); ?>" alt="Image thumbnail">
-                </a>
-                <p>Title: <?= htmlspecialchars($thumbnailData['image_name']); ?></p>
-                <p>Author: <?= htmlspecialchars($thumbnailData['author']); ?></p>
-                <p>Status: <?= $thumbnailData['public'] ? 'Public' : 'Private'; ?></p>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p>No images found.</p>
-    <?php endif; ?>
-</div>
-
-<div class="pagination">
-    <?php if ($currentPage > 1): ?>
-        <a href="?page=<?= $currentPage - 1; ?>">&laquo; Previous</a>
-    <?php endif; ?>
-
-    <?php if ($currentPage < $totalPages): ?>
-        <a href="?page=<?= $currentPage + 1; ?>">Next &raquo;</a>
-    <?php endif; ?>
-</div>
-
+    <title>Prywatna Galeria Zdjęć</title>   
 <style>
 .gallery {
     display: flex;
@@ -118,5 +63,59 @@ nav {
     background-color: #575757;
 }
 </style>
+</head>
+<body>
+<?php
+if (isset($model['errors'])) {
+    foreach ($model['errors'] as $error) {
+        echo "<p style='color: red;'>$error</p>";
+    }
+    unset($model['errors']);
+}
+?>
+
+<nav>
+    <ul class="menu">
+        <li><a href="public">Public Gallery</a></li>
+        <li><a href="gallery">Private Gallery</a></li>
+        <li><a href="search_image">Search Image</a></li>
+        <li><a href="upload">Upload Image</a></li>
+        <li><a href="save_selected">Selected Images</a></li>
+        
+        <?php if (isset($model['user_id'])): ?>
+            <li><a href="logout">Logout</a></li>
+        <?php else: ?>
+            <li><a href="register">Register</a></li>
+            <li><a href="login">Login</a></li>
+        <?php endif; ?>
+    </ul>
+</nav>
+
+<div class="gallery">
+    <?php if (!empty($thumbnails)): ?>
+        <?php foreach ($thumbnails as $thumbnailData): ?>
+            <div class="gallery-item">
+                <a href="<?= htmlspecialchars($thumbnailData['watermark']); ?>" target="_blank">
+                    <img src="<?= htmlspecialchars($thumbnailData['thumbnail']); ?>" alt="Image thumbnail">
+                </a>
+                <p>Title: <?= htmlspecialchars($thumbnailData['image_name']); ?></p>
+                <p>Author: <?= htmlspecialchars($thumbnailData['author']); ?></p>
+                <p>Status: <?= $thumbnailData['public'] ? 'Public' : 'Private'; ?></p>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p>No images found.</p>
+    <?php endif; ?>
+</div>
+
+<div class="pagination">
+    <?php if ($currentPage > 1): ?>
+        <a href="?page=<?= $currentPage - 1; ?>">&laquo; Previous</a>
+    <?php endif; ?>
+
+    <?php if ($currentPage < $totalPages): ?>
+        <a href="?page=<?= $currentPage + 1; ?>">Next &raquo;</a>
+    <?php endif; ?>
+</div>
 </body>
 </html>

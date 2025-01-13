@@ -4,72 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wybrane Zdjęcia</title>
-</head>
-<body>
-<?php
-if (isset($model['errors'])) {
-    foreach ($model['errors'] as $error) {
-        echo "<p style='color: red;'>$error</p>";
-    }
-    unset($model['errors']);
-}
-?>
-
-<nav>
-    <ul class="menu">
-        <li><a href="public">Public Gallery</a></li>
-        <li><a href="gallery">Private Gallery</a></li>
-        <li><a href="search_image">Search Image</a></li>
-        <li><a href="upload">Upload Image</a></li>
-        <li><a href="save_selected">Selected Images</a></li>
-        
-        <?php if (isset($model['user_id'])): ?>
-            <li><a href="logout">Logout</a></li>
-        <?php else: ?>
-            <li><a href="register">Register</a></li>
-            <li><a href="login">Login</a></li>
-        <?php endif; ?>
-    </ul>
-</nav>
-
-<div class="container">
-    <h1>Wybrane Zdjęcia</h1>
-
-    <?php if (!empty($_SESSION['selected_images'])): ?>
-        <form method="post" action="remove_selected">
-            <div class="gallery">
-                <div class="thumbnails">
-                    <?php foreach ($_SESSION['selected_images'] as $thumbnail): ?>
-                        <div class="thumbnail-item">
-                            <label for="remove-image-<?= htmlspecialchars($thumbnail['id']) ?>">
-                                <a href="<?= htmlspecialchars($thumbnail['watermark_path']) ?>" target="_blank">
-                                    <img src="<?= htmlspecialchars($thumbnail['thumbnail_path']) ?>" alt="<?= htmlspecialchars($thumbnail['title']) ?>">
-                                </a>
-                                <div class="image-info">
-                                    <p><strong>ID:
-                                    <input type="checkbox" id="remove-image-<?= htmlspecialchars($thumbnail['_id']) ?>" 
-                                       name="remove_images[]" 
-                                       value="<?= htmlspecialchars($thumbnail['_id']) ?>">
-
-                                    </strong> <?= htmlspecialchars($thumbnail['_id']) ?></p>
-                                    <p><strong>Autor:</strong> <?= htmlspecialchars($thumbnail['author_name']) ?></p>
-                                    <p><strong>Status:</strong> <?= $thumbnail['public'] ? 'Publiczne' : 'Prywatne' ?></p>
-                                    <p><strong>Title:</strong> <?= htmlspecialchars($thumbnail['image_name']) ?></p>
-                                </div>
-                                
-                            </label>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <button type="submit">Usuń zaznaczone z zapamiętanych</button>
-        </form>
-    <?php else: ?>
-        <p>Nie wybrano żadnych zdjęć.</p>
-    <?php endif; ?>
-</div>
-
-<style>
+    <style>
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -140,5 +75,69 @@ nav {
     background-color: #575757;
 }
 </style>
+</head>
+<body>
+<?php
+if (isset($model['errors'])) {
+    foreach ($model['errors'] as $error) {
+        echo "<p style='color: red;'>$error</p>";
+    }
+    unset($model['errors']);
+}
+?>
+
+<nav>
+    <ul class="menu">
+        <li><a href="public">Public Gallery</a></li>
+        <li><a href="gallery">Private Gallery</a></li>
+        <li><a href="search_image">Search Image</a></li>
+        <li><a href="upload">Upload Image</a></li>
+        <li><a href="save_selected">Selected Images</a></li>
+        
+        <?php if (isset($model['user_id'])): ?>
+            <li><a href="logout">Logout</a></li>
+        <?php else: ?>
+            <li><a href="register">Register</a></li>
+            <li><a href="login">Login</a></li>
+        <?php endif; ?>
+    </ul>
+</nav>
+
+<div class="container">
+    <h1>Wybrane Zdjęcia</h1>
+
+    <?php if (!empty($_SESSION['selected_images'])): ?>
+        <form method="post" action="remove_selected">
+            <div class="gallery">
+                <div class="thumbnails">
+                    <?php foreach ($_SESSION['selected_images'] as $thumbnail): ?>
+                        <div class="thumbnail-item">
+                            <label for="remove-image-<?= htmlspecialchars($thumbnail['id']) ?>">
+                                <a href="<?= htmlspecialchars($thumbnail['watermark_path']) ?>" target="_blank">
+                                    <img src="<?= htmlspecialchars($thumbnail['thumbnail_path']) ?>" alt="<?= htmlspecialchars($thumbnail['title']) ?>">
+                                </a>
+                                <div class="image-info">
+                                    <p><strong>ID:
+                                    <input type="checkbox" id="remove-image-<?= htmlspecialchars($thumbnail['_id']) ?>" 
+                                       name="remove_images[]" 
+                                       value="<?= htmlspecialchars($thumbnail['_id']) ?>">
+
+                                    </strong> <?= htmlspecialchars($thumbnail['_id']) ?></p>
+                                    <p><strong>Autor:</strong> <?= htmlspecialchars($thumbnail['author_name']) ?></p>
+                                    <p><strong>Status:</strong> <?= $thumbnail['public'] ? 'Publiczne' : 'Prywatne' ?></p>
+                                    <p><strong>Title:</strong> <?= htmlspecialchars($thumbnail['image_name']) ?></p>
+                                </div>
+                                
+                            </label>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <button type="submit">Usuń zaznaczone z zapamiętanych</button>
+        </form>
+    <?php else: ?>
+        <p>Nie wybrano żadnych zdjęć.</p>
+    <?php endif; ?>
+</div>
 </body>
 </html>
