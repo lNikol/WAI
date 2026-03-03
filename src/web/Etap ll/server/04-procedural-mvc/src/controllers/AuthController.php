@@ -16,6 +16,13 @@ class AuthController {
             $password = $_POST['password'];
             $confirm_password = $_POST['confirm_password'];
 
+
+            $shortSesId = get_session_id_symbols();
+            if(isset($shortSesId)){
+                $model['ses_id'] = $shortSesId;
+            }
+    
+
             if ($password !== $confirm_password) {
                 $model['error'] = 'Passwords do not match';
                 return 'register_view';
@@ -50,26 +57,34 @@ class AuthController {
 
             $user = $this->authService->login($email, $password);
             if ($user) {
-                if (session_status() == PHP_SESSION_NONE || !isset($_COOKIE[session_name()]) || empty($_COOKIE[session_name()])) { 
-                    $params = session_get_cookie_params();
-                    setcookie(session_name(), '', time() - 42000,
-                    $params["path"], $params["domain"],
-                    $params["secure"], $params["httponly"]
-                    );
+                if (session_status() == PHP_SESSION_NONE || !isset($_COOKIE[session_name()])) { 
                     session_start(); 
                 }
                 $us_id = $this->authService->getUserId($user);
                 $_SESSION['user_id'] = $us_id;
                 $model['user_id'] = $us_id;
                 $_SESSION['user_name'] = $user->getName();
+                
+                $shortSesId = get_session_id_symbols();
+                if(isset($shortSesId)){
+                    $model['ses_id'] = $shortSesId;
+                }
+
                 return REDIRECT_PREFIX . 'upload';
             } else {
                 $model['error'] = 'Invalid credentials';
             }
         }
-                if(isset($_SESSION['user_id'])){
+        if(isset($_SESSION['user_id'])){
             $model['user_id'] = $_SESSION['user_id'];
         }
+
+        $shortSesId = get_session_id_symbols();
+
+        if(isset($shortSesId)){
+            $model['ses_id'] = $shortSesId;
+        }
+
         return 'login_view';
     }
 
@@ -80,6 +95,11 @@ class AuthController {
             $params["path"], $params["domain"],
             $params["secure"], $params["httponly"]
             );
+        }
+        $shortSesId = get_session_id_symbols();
+
+        if(isset($shortSesId)){
+            $model['ses_id'] = $shortSesId;
         }
         return REDIRECT_PREFIX . 'register';
     }

@@ -73,6 +73,11 @@ nav {
 <body>
 <h1>Upload Images</h1>
 <?php
+
+if(isset($model['ses_id'])){
+    echo $model['ses_id'];
+}
+
 if (isset($model['errors'])) {
     foreach ($model['errors'] as $error) {
         echo "<p style='color: red;'>$error</p>";

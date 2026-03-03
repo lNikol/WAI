@@ -141,7 +141,7 @@ nav {
                                     <input type="checkbox" id="image-<?= htmlspecialchars($thumbnail['id']) ?>" 
                                         name="selected_images[]" 
                                         value="<?= htmlspecialchars($thumbnail['id']) ?>" 
-                                        <?= isset($model['selected_images']) && in_array($thumbnail['id'], array_column($model['selected_images'], '_id')) ? 'checked' : '' ?>>
+                                        <?= isset($model['selected_images']) && in_array($thumbnail['_id'], array_column($model['selected_images'], '_id')) ? 'checked' : '' ?>>
                                     </strong><?= htmlspecialchars($thumbnail['id']) ?></p>
                                         
                                     <p><strong>Autor:</strong> <?= htmlspecialchars($thumbnail['author']) ?></p>

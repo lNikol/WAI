@@ -20,6 +20,13 @@ class ImageController {
         }
         $model['user_id'] = $user_id;
         $model['user_name'] = get_user_name($user_id);
+        
+        $shortSesId = get_session_id_symbols();
+        if(isset($shortSesId)){
+            $model['ses_id'] = $shortSesId;
+        }
+
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['images'])) {
             $files = $_FILES['images'];
             $uploadDirectory = '../public/images/';
@@ -159,7 +166,7 @@ class ImageController {
             }
 
             $_SESSION['selected_images'] = $images;
-            $model = $images;
+            $model['selected_images'] = $images;
             if (!empty($errors)) {
                 $_SESSION['errors'] = $errors;
                 $model['errors'] = $errors;
@@ -175,7 +182,7 @@ class ImageController {
             return 'selected_gallery_view';
         }
 
-        return 'gallery_public_view';
+        return 'selected_gallery_view';
     }
 
     public function remove_selected() {

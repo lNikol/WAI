@@ -24,6 +24,12 @@ function get_db() {
     return $mongo->wai;
 }
 
+function get_session_id_symbols(){
+    $sessionId = session_id();
+    $shortSessionId = substr($sessionId, 0, 4);
+    return "Pierwsze 4 znaki identyfikatora sesji: " . $shortSessionId;
+}
+
 
 $db = get_db();
 

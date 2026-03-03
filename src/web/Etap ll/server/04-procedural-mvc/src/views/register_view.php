@@ -53,6 +53,12 @@
     </ul>
 </nav>
 <?php
+
+if(isset($model['ses_id'])){
+    echo $model['ses_id'];
+}
+
+
 if (isset($model['user_id'])) {
     echo "<p>You are already logged in. <a href='logout'>Logout</a></p>";
     exit;
